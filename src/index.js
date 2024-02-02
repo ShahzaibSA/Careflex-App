@@ -1,9 +1,10 @@
 'use strict';
-console.log('CAREFELX APP');
-const port = process.env.PORT || 5000;
 const express = require('express');
 const bodyParser = require('body-parser');
+const connectDB = require('./db');
+const userRoutes = require('./routes/userRoutes');
 
+const port = process.env.PORT || 5000;
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
@@ -16,6 +17,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/v1/users', userRoutes);
+
 app.use((error, req, res, next) => {
   console.log('index-----error', error);
   const status = error.statusCode || 500;
@@ -23,6 +26,15 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message });
 });
 
+//! DATABASE CONNECTION
+connectDB();
+
+app.use((error, req, res, next) => {
+  console.log('index-----error', error);
+  const status = error.statusCode || 500;
+  const message = error.message;
+  res.status(status).json({ message: message });
+});
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
