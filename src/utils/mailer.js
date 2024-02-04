@@ -14,7 +14,7 @@ const mailer = async function (user, forgotPasswordToken) {
       }
     });
     const mailOptions = {
-      from: process.env.MailerEmail,
+      from: process.env.MAILER_EMAIL,
       to: user.email,
       subject: 'Reset Your Password',
       html: `<p>Hello ${user.username} <a href='${process.env.BASE_URL}/v1/users/reset-password?token=${forgotPasswordToken}'>Click Here</a> to reset your password. </p>`
