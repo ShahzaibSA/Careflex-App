@@ -48,27 +48,12 @@ const handleLoginUser = async function (req, res) {
     if (!user) {
       return res.status(400).json({ ok: false, message: 'No Account Found. Please Sign Up!' });
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-    if (!user.isEmailVerified)
-      return res.status(400).send({
-        ok: false,
-        message:
-          'A verification email is sent to your email address. Please verify it to continue!'
-      });
-=======
-=======
->>>>>>> 45b66aceaefdd5a509747321fcbd0d3b65c7d9a8
     // if (!user.isEmailVerified)
     //   return res.status(400).send({
     //     ok: false,
     //     message:
     //       'A verification email is sent to your email address. Please verify it to continue!'
     //   });
-<<<<<<< HEAD
->>>>>>> c1e3f41 (Add OK field in response and changed node mailer settings and minor change.)
-=======
->>>>>>> 45b66aceaefdd5a509747321fcbd0d3b65c7d9a8
     const passwordMatched = await bcrypt.compare(password, user.password);
     if (!passwordMatched) {
       return res.status(400).json({ ok: false, message: 'Invalid Email or Password' });
@@ -238,44 +223,9 @@ const handleResetPassword = async function (req, res) {
     res.status(200).json({ ok: true, message: 'Password successfully reset.' });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
-<<<<<<< HEAD
   }
 };
 
-<<<<<<< HEAD
-//! Email Verification
-const handleUserEmailVerification = async function (req, res) {
-  try {
-    const { token } = req.query;
-
-    if (!token) return res.status(400).json({ ok: false, message: 'Please provide token.' });
-
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-
-    if (!decoded) {
-      return res.status(404).json({ ok: false, message: 'Token has been expired.' });
-    }
-
-    const user = await User.findOne({
-      _id: decoded.uid,
-      'tokens.token': token
-    });
-
-    if (!user) return res.status(400).json({ ok: false });
-
-    user.tokens = user.tokens.filter((tokens) => tokens.token !== token);
-    user.isEmailVerified = true;
-    await user.save();
-    res.status(200).json({ ok: true, message: 'Email successfully verified.' });
-  } catch (error) {
-    res.status(500).json({ ok: false, error: error?.message || error });
-=======
->>>>>>> c1e3f41 (Add OK field in response and changed node mailer settings and minor change.)
-  }
-};
-
-=======
->>>>>>> 45b66aceaefdd5a509747321fcbd0d3b65c7d9a8
 module.exports = {
   handleCreateUser,
   handleLoginUser,
