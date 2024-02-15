@@ -3,37 +3,85 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const speakeasy = require('speakeasy');
 
 const User = require('../models/userModel');
+const OTP = require('../models/otpModel');
 const mailer = require('../utils/mailer');
 
 //!Signup
 const handleCreateUser = async function (req, res) {
-  const { body } = req;
+  const { password, confirmPassword, email } = req.body;
   try {
-    // await User.deleteMany();
-    if (body.password !== body.confirmPassword) {
+    if (password !== confirmPassword) {
       return res.status(404).json({ ok: false, message: 'Password does not match!' });
     }
 
-    // const user = new User({ ...body, role: 'home' });
-    const user = new User(body);
-    await user.save();
+    const userExist = await User.findOne({ email });
+    if (userExist) return res.status(409).json({ ok: false, message: 'Email already exists' });
 
-    const token = await user.generateToken();
+    const user = new User(req.body);
+
+    const secret = speakeasy.generateSecret({ length: 20 });
+    // Generate a TOTP code using the secret key
+    const code = speakeasy.totp({
+      secret: secret.base32,
+      encoding: 'base32'
+    });
+    await OTP.create({ code: code, uid: user._id });
 
     const mailOptions = {
       from: process.env.MAILER_EMAIL,
       to: user.email,
       subject: 'Email Verification',
-      html: `<p>Hello ${user.username} <a href='${process.env.BASE_URL}/v1/users/verification?token=${token}'>Click Here</a> to verify your email. </p>`
+      html: `<p>Hello ${user.username.toUpperCase()} here's your <strong>${code}</strong> OTP to verify your email. </p>`
     };
 
     await mailer(mailOptions);
 
+    delete user._doc.isEmailVerified;
+    delete user._doc.tokens;
+    req.session.user = user._doc;
+    req.session.secret = secret.base32;
+    req.session.save();
     res.status(201).json({
       ok: true,
-      message: 'A verification email is sent to your email address. Please verify your email.'
+      message: 'A verification OTP is sent to your email address. Please verify your OTP.'
+    });
+  } catch (error) {
+    res.status(500).json({ ok: false, error: error?.message || error });
+  }
+};
+
+//! Verify OTP
+const handleVerifyEmail = async function (req, res) {
+  const { code } = req.body;
+  const { user, secret } = req.session;
+  try {
+    const codeValidate = speakeasy.totp.verify({
+      secret: secret,
+      encoding: 'base32',
+      token: code,
+      window: 6
+    });
+
+    if (!codeValidate)
+      return res.status(400).json({ ok: false, message: 'OTP is not valid.' });
+
+    const uid = await OTP.findOneAndDelete({ code, uid: user._id });
+    if (!uid)
+      return res.status(404).json({ ok: false, message: 'This OTP has already been used.' });
+
+    const saveUser = new User({ ...user, isEmailVerified: true });
+    await saveUser.save();
+    req.session.destroy();
+
+    const token = await saveUser.generateToken();
+    res.status(201).json({
+      ok: true,
+      token,
+      user: saveUser,
+      message: 'Email successfully verified.'
     });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
@@ -44,16 +92,16 @@ const handleCreateUser = async function (req, res) {
 const handleLoginUser = async function (req, res) {
   const { email, password } = req.body;
   try {
+    if (req.session?.user?.email == email) {
+      return res.status(400).send({
+        ok: false,
+        message: 'An OTP is sent to your email address. Please verify it to continue!'
+      });
+    }
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ ok: false, message: 'No Account Found. Please Sign Up!' });
     }
-    // if (!user.isEmailVerified)
-    //   return res.status(400).send({
-    //     ok: false,
-    //     message:
-    //       'A verification email is sent to your email address. Please verify it to continue!'
-    //   });
     const passwordMatched = await bcrypt.compare(password, user.password);
     if (!passwordMatched) {
       return res.status(400).json({ ok: false, message: 'Invalid Email or Password' });
@@ -236,5 +284,6 @@ module.exports = {
   handleLogoutAll,
   handleDeleteUser,
   handleForgotPassword,
-  handleResetPassword
+  handleResetPassword,
+  handleVerifyEmail
 };

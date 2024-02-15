@@ -11,7 +11,8 @@ const {
   handleLogoutAll,
   handleDeleteUser,
   handleForgotPassword,
-  handleResetPassword
+  handleResetPassword,
+  handleVerifyEmail
 } = require('../controllers/userCtrls');
 const authenticate = require('../middlewares/auth');
 const validateRequiredFields = require('../middlewares/validateFields');
@@ -25,8 +26,8 @@ router.post(
   handleCreateUser
 );
 
-//! Reset Password
-// router.post('/verification', handleUserEmailVerification);
+//! Email Verification
+router.post('/verification', validateRequiredFields(['code']), handleVerifyEmail);
 
 //! Login
 router.post('/login', validateRequiredFields(['email', 'password']), handleLoginUser);
