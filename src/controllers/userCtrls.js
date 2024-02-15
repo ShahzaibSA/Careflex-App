@@ -49,6 +49,7 @@ const handleLoginUser = async function (req, res) {
       return res.status(400).json({ ok: false, message: 'No Account Found. Please Sign Up!' });
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     if (!user.isEmailVerified)
       return res.status(400).send({
         ok: false,
@@ -56,13 +57,18 @@ const handleLoginUser = async function (req, res) {
           'A verification email is sent to your email address. Please verify it to continue!'
       });
 =======
+=======
+>>>>>>> 45b66aceaefdd5a509747321fcbd0d3b65c7d9a8
     // if (!user.isEmailVerified)
     //   return res.status(400).send({
     //     ok: false,
     //     message:
     //       'A verification email is sent to your email address. Please verify it to continue!'
     //   });
+<<<<<<< HEAD
 >>>>>>> c1e3f41 (Add OK field in response and changed node mailer settings and minor change.)
+=======
+>>>>>>> 45b66aceaefdd5a509747321fcbd0d3b65c7d9a8
     const passwordMatched = await bcrypt.compare(password, user.password);
     if (!passwordMatched) {
       return res.status(400).json({ ok: false, message: 'Invalid Email or Password' });
@@ -236,6 +242,7 @@ const handleResetPassword = async function (req, res) {
   }
 };
 
+<<<<<<< HEAD
 //! Email Verification
 const handleUserEmailVerification = async function (req, res) {
   try {
@@ -267,6 +274,8 @@ const handleUserEmailVerification = async function (req, res) {
   }
 };
 
+=======
+>>>>>>> 45b66aceaefdd5a509747321fcbd0d3b65c7d9a8
 module.exports = {
   handleCreateUser,
   handleLoginUser,
@@ -277,6 +286,5 @@ module.exports = {
   handleLogoutAll,
   handleDeleteUser,
   handleForgotPassword,
-  handleResetPassword,
-  handleUserEmailVerification
+  handleResetPassword
 };
