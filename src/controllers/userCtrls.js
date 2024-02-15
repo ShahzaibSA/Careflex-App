@@ -48,12 +48,21 @@ const handleLoginUser = async function (req, res) {
     if (!user) {
       return res.status(400).json({ ok: false, message: 'No Account Found. Please Sign Up!' });
     }
+<<<<<<< HEAD
     if (!user.isEmailVerified)
       return res.status(400).send({
         ok: false,
         message:
           'A verification email is sent to your email address. Please verify it to continue!'
       });
+=======
+    // if (!user.isEmailVerified)
+    //   return res.status(400).send({
+    //     ok: false,
+    //     message:
+    //       'A verification email is sent to your email address. Please verify it to continue!'
+    //   });
+>>>>>>> c1e3f41 (Add OK field in response and changed node mailer settings and minor change.)
     const passwordMatched = await bcrypt.compare(password, user.password);
     if (!passwordMatched) {
       return res.status(400).json({ ok: false, message: 'Invalid Email or Password' });
@@ -223,6 +232,7 @@ const handleResetPassword = async function (req, res) {
     res.status(200).json({ ok: true, message: 'Password successfully reset.' });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
+<<<<<<< HEAD
   }
 };
 
@@ -252,6 +262,8 @@ const handleUserEmailVerification = async function (req, res) {
     res.status(200).json({ ok: true, message: 'Email successfully verified.' });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
+=======
+>>>>>>> c1e3f41 (Add OK field in response and changed node mailer settings and minor change.)
   }
 };
 
