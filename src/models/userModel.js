@@ -6,6 +6,10 @@ const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema(
   {
+    isEmailVerified: {
+      type: Boolean,
+      default: false
+    },
     role: {
       type: String,
       required: true,
@@ -31,11 +35,18 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       trim: true,
-      minLength: 7
+      validate(value) {
+        if (value.toLowerCase().includes('password')) {
+          throw new Error('Password cannot contain "password"');
+        }
+        if (!validator.isStrongPassword(value)) {
+          throw new Error(
+            'Your password must contain 8 characters, 1 Uppsercase, 1 Lowercase, 1 Number, 1 Symbol'
+          );
+        }
+      }
     },
     tokens: [{ token: { type: String, required: true } }]
-    // refreshTokens: [String]
-    // refreshTokens: [{ refreshToken: { type: String } }]
   },
   { timestamps: true }
 );
@@ -48,9 +59,11 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-userSchema.methods.generateAuthToken = async function () {
+userSchema.methods.generateToken = async function (time) {
   const user = this;
-  const token = jwt.sign({ uid: user._id }, process.env.TOKEN_SECRET, { expiresIn: '7d' });
+  const token = jwt.sign({ uid: user._id }, process.env.TOKEN_SECRET, {
+    expiresIn: time || '7d'
+  });
 
   user.tokens = user.tokens.concat({ token });
   await user.save();
@@ -66,6 +79,7 @@ userSchema.methods.toJSON = function () {
   delete userObject.tokens;
   delete userObject.password;
   delete userObject.confirmPassword;
+  delete userObject.isEmailVerified;
 
   return userObject;
 };
