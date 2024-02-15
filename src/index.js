@@ -17,6 +17,7 @@ app.use((req, res, next) => {
   next();
 });
 
+//! API ROUTES
 app.use('/v1/users', userRoutes);
 
 app.use((error, req, res, next) => {
