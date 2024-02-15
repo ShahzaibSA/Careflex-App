@@ -25,6 +25,9 @@ router.post(
   handleCreateUser
 );
 
+//! Reset Password
+// router.post('/verification', handleUserEmailVerification);
+
 //! Login
 router.post('/login', validateRequiredFields(['email', 'password']), handleLoginUser);
 
