@@ -44,7 +44,7 @@ const handleCreateUser = async function (req, res) {
     req.session.user = user._doc;
     req.session.secret = secret.base32;
     req.session.save();
-    res.status(201).json({
+    res.status(200).json({
       ok: true,
       message: 'A verification OTP is sent to your email address. Please verify your OTP.'
     });
@@ -129,16 +129,22 @@ const handleGetUser = function (req, res) {
 
 //! Update User
 const handleUpdateUser = async function (req, res) {
+  const { body } = req;
+  const user = req.user;
   try {
-    const user = req.user;
-    const updates = Object.keys(req.body);
+    if (body.email !== user.email) {
+      const emailExists = await User.findOne({ email: body.email });
+      if (emailExists)
+        return res.status(400).json({ ok: false, message: 'This email already in use.' });
+    }
+    const updates = Object.keys(body);
     const allowedUpdates = ['username', 'email'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
     if (!isValidOperation)
       return res.status(400).send({ ok: false, message: 'Invalid updates!' });
 
-    updates.forEach((update) => (req.user[update] = req.body[update]));
+    updates.forEach((update) => (req.user[update] = body[update]));
     await user.save();
 
     res.status(200).json({ ok: true, user, message: 'Profile successfully updated.' });
