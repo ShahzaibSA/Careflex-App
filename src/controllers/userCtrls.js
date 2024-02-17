@@ -256,7 +256,7 @@ const handleLogoutUser = async function (req, res) {
     const { user } = req;
     user.tokens = user.tokens.filter((tokens) => tokens.token !== req.token);
     await user.save();
-    res.status(200).json({ ok: true, message: 'User successfully Logged out' });
+    res.status(200).json({ ok: true, message: 'User successfully Logged out.' });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
   }
@@ -269,7 +269,7 @@ const handleLogoutAll = async function (req, res) {
     user.tokens = user.tokens.filter((tokens) => tokens.token === req.token);
     await user.save();
 
-    res.status(200).json({ ok: true, message: 'All other devices successfully Logged out' });
+    res.status(200).json({ ok: true, message: 'All other devices successfully Logged out.' });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
   }
@@ -349,7 +349,7 @@ const handleResetPassword = async function (req, res) {
 
     const passwordMatched = await bcrypt.compare(password, user.password);
     if (passwordMatched) {
-      return res.status(400).json({ ok: false, message: 'Please enter a new password' });
+      return res.status(400).json({ ok: false, message: 'Please enter a new password.' });
     }
     user.tokens = [];
     user.password = password;
