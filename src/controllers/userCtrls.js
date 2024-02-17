@@ -170,7 +170,6 @@ const handleEmailUpdate = async function (req, res) {
   if (email === user.email) {
     return res.status(400).json({ ok: false, message: 'This email is your current email.' });
   }
-  console.log(sessionEmail, email);
   if (sessionEmail !== email) {
     return res.status(400).json({ ok: false, message: 'Invalid OTP verification.' });
   }
