@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "2e81eaf4-3f30-4678-97c7-08d69da598e3",
-		"name": "CAREFLEX DEV",
+		"name": "CAREFLEX",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "17281220"
 	},
@@ -55,8 +55,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"var res = pm.response.json();\r",
-									"pm.environment.set('token', res.token);"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -67,7 +66,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"role\": \"home\",\r\n    \"username\":\"Shahzaib Ahmed\",\r\n    \"email\":\"shahzaibsaa1@gmail.com\",\r\n    \"password\":\"Test@123\",\r\n    \"confirmPassword\":\"Test@123\"\r\n}",
+							"raw": "{\r\n    \"role\": \"HOME\",\r\n    \"username\":\"Shahzaib Ahmed\",\r\n    \"email\":\"shahzaibsaa1@gmail.com\",\r\n    \"password\":\"Test@123\",\r\n    \"confirmPassword\":\"Test@123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -99,7 +98,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\":\"shahzaibsaa1@gmail.com\",\r\n    \"password\":\"Test@12345\"\r\n}",
+							"raw": "{\r\n    \"email\":\"shahzaibphones@gmail.com\",\r\n    \"password\":\"Test@12345\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -159,6 +158,37 @@
 					"response": []
 				},
 				{
+					"name": "Email Verification",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var res = pm.response.json();\r",
+									"if(res.error) return;\r",
+									"pm.environment.set('token', res.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\": \"874583\"          \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/v1/users/verification"
+					},
+					"response": []
+				},
+				{
 					"name": "Forgot Password",
 					"event": [
 						{
@@ -204,11 +234,16 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": []
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"Test@12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
-							"raw": "http://localhost:5000/v1/users/reset-password?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NWJkNzYzMmEwMWUwNTliZGMyYWIwN2QiLCJpYXQiOjE3MDY5MTU4ODR9.uwLdObKnk1CI2L-UOLt_D1QeNsILZgGM0NiqTNj4TSY",
+							"raw": "http://localhost:5000/v1/users/reset-password?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NWMzYTE0YTc1NTg3NzgzYWY4YzlkOTAiLCJpYXQiOjE3MDczMTk2NDUsImV4cCI6MTcwNzMyMDI0NX0.7YkcvFnmQQ69Mx8myH8XYGhFAC9jLUDptHSpEdhrS0E",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -222,10 +257,58 @@
 							"query": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NWJkNzYzMmEwMWUwNTliZGMyYWIwN2QiLCJpYXQiOjE3MDY5MTU4ODR9.uwLdObKnk1CI2L-UOLt_D1QeNsILZgGM0NiqTNj4TSY"
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NWMzYTE0YTc1NTg3NzgzYWY4YzlkOTAiLCJpYXQiOjE3MDczMTk2NDUsImV4cCI6MTcwNzMyMDI0NX0.7YkcvFnmQQ69Mx8myH8XYGhFAC9jLUDptHSpEdhrS0E"
 								}
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email Update Otp",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"shahzaibphones@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/v1/users/email-update-otp"
+					},
+					"response": []
+				},
+				{
+					"name": "Email Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"Shahzaib Ahmed Changed\",\r\n    \"email\": \"shahzaibsaa1@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/v1/users/email-update"
 					},
 					"response": []
 				},
@@ -242,7 +325,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Shahzaib Ahmed\",\r\n    \"email\": \"shahzaib@gmail.com\",\r\n    \"password\": \"Test@123\"\r\n}",
+							"raw": "{\r\n    \"username\": \"Shahzaib Ahmed\"}",
 							"options": {
 								"raw": {
 									"language": "json"
