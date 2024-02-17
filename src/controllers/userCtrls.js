@@ -320,7 +320,7 @@ const handleForgotPassword = async function (req, res) {
 
     res.json({
       ok: true,
-      message: 'We have sent an email to you. Please check your inbox.'
+      message: 'We have sent an OTP to your email. Please check your inbox.'
     });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
@@ -331,6 +331,7 @@ const handleResetPassword = async function (req, res) {
   try {
     const { secret, uid } = req.session;
     const { password, code } = req.body;
+
     if (!password) {
       return res.status(400).json({ ok: false, message: 'Please enter a password.' });
     }
@@ -338,7 +339,8 @@ const handleResetPassword = async function (req, res) {
     if (!validateCode(secret, code))
       return res.status(400).json({ ok: false, message: 'Please enter a valid OTP.' });
 
-    const otp = await OTP.deleteMany({ code, uid });
+    const otp = await OTP.findOne({ code, uid });
+    await OTP.deleteMany({ uid });
 
     if (!otp)
       return res.status(400).json({ ok: false, message: 'OTP has been already used.' });
