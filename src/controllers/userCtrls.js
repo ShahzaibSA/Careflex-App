@@ -308,7 +308,7 @@ const handleForgotPassword = async function (req, res) {
     const mailOptions = {
       from: process.env.MAILER_EMAIL,
       to: email,
-      subject: 'Email Verification',
+      subject: 'OTP for Reset Password',
       html: `<p>Hello ${user.username.toUpperCase()} here's your <strong>${code}</strong> OTP to reset your password. </p>`
     };
 
