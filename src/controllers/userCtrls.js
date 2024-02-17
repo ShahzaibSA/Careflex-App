@@ -8,6 +8,7 @@ const speakeasy = require('speakeasy');
 const User = require('../models/userModel');
 const OTP = require('../models/otpModel');
 const mailer = require('../utils/mailer');
+const generateOTP = require('../utils/generateOTP');
 
 //!Signup
 const handleCreateUser = async function (req, res) {
@@ -22,13 +23,7 @@ const handleCreateUser = async function (req, res) {
 
     const user = new User(req.body);
 
-    const secret = speakeasy.generateSecret({ length: 20 });
-    // Generate a TOTP code using the secret key
-    const code = speakeasy.totp({
-      secret: secret.base32,
-      encoding: 'base32'
-    });
-    await OTP.create({ code: code, uid: user._id });
+    const { code, secret } = await generateOTP(user._id);
 
     const mailOptions = {
       from: process.env.MAILER_EMAIL,
@@ -42,7 +37,7 @@ const handleCreateUser = async function (req, res) {
     delete user._doc.isEmailVerified;
     delete user._doc.tokens;
     req.session.user = user._doc;
-    req.session.secret = secret.base32;
+    req.session.secret = secret;
     req.session.save();
     res.status(200).json({
       ok: true,
@@ -57,6 +52,7 @@ const handleCreateUser = async function (req, res) {
 const handleVerifyEmail = async function (req, res) {
   const { code } = req.body;
   const { user, secret } = req.session;
+  if (!secret) return res.sendStatus(400);
   try {
     const codeValidate = speakeasy.totp.verify({
       secret: secret,
@@ -127,18 +123,98 @@ const handleGetUser = function (req, res) {
   }
 };
 
+const handleGenerateEmailUpdateOTP = async function (req, res) {
+  const { email } = req.body;
+  const { user } = req;
+  if (email === user.email) {
+    return res.status(400).json({ ok: false, message: 'This email is your current email.' });
+  }
+  try {
+    if (email !== user.email) {
+      const emailExists = await User.findOne({ email: email });
+      if (emailExists)
+        return res.status(400).json({ ok: false, message: 'The email already in use.' });
+    }
+
+    const { code, secret } = await generateOTP(user._id);
+
+    const mailOptions = {
+      from: process.env.MAILER_EMAIL,
+      to: email,
+      subject: 'Email Verification',
+      html: `<p>Hello ${user.username.toUpperCase()} here's your <strong>${code}</strong> OTP to verify your email. </p>`
+    };
+    await mailer(mailOptions);
+
+    req.session.secret = secret;
+    req.session.sessionEmail = email;
+    req.session.save();
+
+    res.status(200).json({
+      code,
+      ok: true,
+      message: 'A verification OTP is sent to entered email address. Please verify your OTP.'
+    });
+  } catch (error) {
+    res.status(500).json({ ok: false, error: error?.message || error });
+  }
+};
+
+//! Email Update
+const handleEmailUpdate = async function (req, res) {
+  const { email, code } = req.body;
+  const { user } = req;
+  const { secret, sessionEmail } = req.session;
+
+  if (!secret) return res.sendStatus(400);
+  if (email === user.email) {
+    return res.status(400).json({ ok: false, message: 'This email is your current email.' });
+  }
+  console.log(sessionEmail, email);
+  if (sessionEmail !== email) {
+    return res.status(400).json({ ok: false, message: 'Invalid OTP verification.' });
+  }
+
+  try {
+    const emailExists = await User.findOne({ email });
+    if (emailExists) {
+      return res.status(400).json({ ok: false, message: 'The email already in use.' });
+    }
+
+    const codeValidate = speakeasy.totp.verify({
+      secret: secret,
+      encoding: 'base32',
+      token: code,
+      window: 6
+    });
+
+    if (!codeValidate)
+      return res.status(400).json({ ok: false, message: 'OTP is not valid.' });
+
+    await OTP.findOneAndDelete({ code, uid: user._id });
+
+    user.email = email;
+    user.tokens = user.tokens.filter((tokens) => tokens.token === req.token);
+    await user.save();
+
+    req.session.destroy();
+
+    res.status(200).json({
+      ok: true,
+      message: 'Email successfully updated.'
+    });
+  } catch (error) {
+    res.status(500).json({ ok: false, error: error?.message || error });
+  }
+};
+
 //! Update User
 const handleUpdateUser = async function (req, res) {
   const { body } = req;
   const user = req.user;
   try {
-    if (body.email !== user.email) {
-      const emailExists = await User.findOne({ email: body.email });
-      if (emailExists)
-        return res.status(400).json({ ok: false, message: 'This email already in use.' });
-    }
     const updates = Object.keys(body);
-    const allowedUpdates = ['username', 'email'];
+    const allowedUpdates = ['username'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
     if (!isValidOperation)
@@ -291,5 +367,7 @@ module.exports = {
   handleDeleteUser,
   handleForgotPassword,
   handleResetPassword,
-  handleVerifyEmail
+  handleVerifyEmail,
+  handleGenerateEmailUpdateOTP,
+  handleEmailUpdate
 };

@@ -12,7 +12,9 @@ const {
   handleDeleteUser,
   handleForgotPassword,
   handleResetPassword,
-  handleVerifyEmail
+  handleVerifyEmail,
+  handleGenerateEmailUpdateOTP,
+  handleEmailUpdate
 } = require('../controllers/userCtrls');
 const authenticate = require('../middlewares/auth');
 const validateRequiredFields = require('../middlewares/validateFields');
@@ -35,10 +37,26 @@ router.post('/login', validateRequiredFields(['email', 'password']), handleLogin
 //! Get User
 router.get('/', authenticate, handleGetUser);
 
+//! Email Update OTP
+router.post(
+  '/email-update-otp',
+  validateRequiredFields(['email']),
+  authenticate,
+  handleGenerateEmailUpdateOTP
+);
+
+//! Update Email
+router.patch(
+  '/email-update',
+  validateRequiredFields(['email', 'code']),
+  authenticate,
+  handleEmailUpdate
+);
+
 //! Update User
 router.patch(
   '/',
-  validateRequiredFields(['username', 'email']),
+  validateRequiredFields(['username']),
   authenticate,
   handleUpdateUser
 );
