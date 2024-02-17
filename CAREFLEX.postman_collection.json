@@ -98,7 +98,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\":\"shahzaibphones@gmail.com\",\r\n    \"password\":\"Test@12345\"\r\n}",
+							"raw": "{\r\n    \"email\":\"shahzaibsaa1@gmail.com\",\r\n    \"password\":\"Test@123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -177,7 +177,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"code\": \"874583\"          \r\n}",
+							"raw": "{\r\n    \"code\": \"745035\"          \r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -235,32 +235,14 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"password\": \"Test@12345\"\r\n}",
+							"raw": "{\r\n    \"password\": \"Test@12345\",\r\n    \"code\": \"821416\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": {
-							"raw": "http://localhost:5000/v1/users/reset-password?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NWMzYTE0YTc1NTg3NzgzYWY4YzlkOTAiLCJpYXQiOjE3MDczMTk2NDUsImV4cCI6MTcwNzMyMDI0NX0.7YkcvFnmQQ69Mx8myH8XYGhFAC9jLUDptHSpEdhrS0E",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"v1",
-								"users",
-								"reset-password"
-							],
-							"query": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NWMzYTE0YTc1NTg3NzgzYWY4YzlkOTAiLCJpYXQiOjE3MDczMTk2NDUsImV4cCI6MTcwNzMyMDI0NX0.7YkcvFnmQQ69Mx8myH8XYGhFAC9jLUDptHSpEdhrS0E"
-								}
-							]
-						}
+						"url": "{{url}}/v1/users/reset-password"
 					},
 					"response": []
 				},
@@ -277,7 +259,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"shahzaibphones@gmail.com\"\r\n}",
+							"raw": "{\r\n    \"email\": \"shahzaibsaa1@gmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -301,7 +283,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Shahzaib Ahmed Changed\",\r\n    \"email\": \"shahzaibsaa1@gmail.com\"\r\n}",
+							"raw": "{\r\n    \"email\": \"shahzaibsaa1@gmail.com\",\r\n     \"code\": \"905562\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -325,7 +307,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Shahzaib Ahmed\"}",
+							"raw": "{\r\n    \"username\": \"Shahzaib Ahmed Changed\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

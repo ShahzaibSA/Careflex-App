@@ -61,7 +61,7 @@ router.patch(
   handleUpdateUser
 );
 
-//! Update User
+//! Update Password
 router.patch(
   '/update-password',
   validateRequiredFields(['currentPassword', 'newPassword', 'confirmPassword']),
