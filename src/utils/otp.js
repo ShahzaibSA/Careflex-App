@@ -1,20 +1,17 @@
 'use strict';
 
 const speakeasy = require('speakeasy');
-const OTP = require('../models/otpModel');
 
 const generateOTP = function () {
   try {
-    const secret = speakeasy.generateSecret({ length: 20 });
-    // Generate a TOTP code using the secret key
-    let code = speakeasy.totp({
-      secret: secret.base32,
-      encoding: 'base32'
-    });
-
-    if (code.toString().length !== 6) {
-      code = generateOTP(user._id);
-    }
+    let code, secret;
+    do {
+      secret = speakeasy.generateSecret({ length: 20 });
+      code = speakeasy.totp({
+        secret: secret.base32,
+        encoding: 'base32'
+      });
+    } while (code.toString().length !== 6 || code.toString().startsWith('0'));
 
     return { code, secret: secret.base32 };
   } catch (error) {
