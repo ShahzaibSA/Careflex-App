@@ -1,4 +1,4 @@
-const validateRequiredFields = function (requiredFields) {
+const validateRequiredBodyFields = function (requiredFields) {
   return function (req, res, next) {
     const missingFields = [];
 
@@ -19,4 +19,25 @@ const validateRequiredFields = function (requiredFields) {
   };
 };
 
-module.exports = validateRequiredFields;
+const validateRequiredQueryFields = function (requiredFields) {
+  return function (req, res, next) {
+    const missingFields = [];
+
+    for (const field of requiredFields) {
+      if (!(field in req.query)) {
+        missingFields.push(field);
+      }
+    }
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        error: `The following fields are required: ${missingFields.join(', ')}`
+      });
+    }
+
+    // If all required fields are present in req.body, call the next middleware
+    next();
+  };
+};
+
+module.exports = { validateRequiredBodyFields, validateRequiredQueryFields };

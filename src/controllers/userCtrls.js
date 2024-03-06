@@ -60,6 +60,7 @@ const handleVerifyEmail = async function (req, res) {
     }
 
     const saveUser = new User({ ...user, isEmailVerified: true });
+    console.log(saveUser);
     await saveUser.save();
     const token = await saveUser.generateToken();
 
@@ -81,7 +82,7 @@ const handleLoginUser = async function (req, res) {
   const { email, password } = req.body;
   try {
     if (req.session?.user?.email == email) {
-      return res.status(400).send({
+      return res.status(401).send({
         ok: false,
         message: 'An OTP is sent to your email address. Please verify it to continue!'
       });

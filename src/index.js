@@ -4,6 +4,8 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const connectDB = require('./db');
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const populateAdmin = require('./utils/populateAdmin');
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -27,8 +29,14 @@ app.use((req, res, next) => {
   next();
 });
 
+//! POPULATE ADMIN
+// populateAdmin();
+
 //! API ROUTES
 app.use('/v1/users', userRoutes);
+
+//! ADMIN ROUTES
+app.use('/v1/admin', adminRoutes);
 
 app.use((error, req, res, next) => {
   console.log('index-----error', error);

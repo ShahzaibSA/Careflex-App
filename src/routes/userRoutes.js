@@ -16,23 +16,23 @@ const {
   handleGenerateEmailUpdateOTP,
   handleEmailUpdate
 } = require('../controllers/userCtrls');
-const authenticate = require('../middlewares/auth');
-const validateRequiredFields = require('../middlewares/validateFields');
+const { authenticate } = require('../middlewares/auth');
+const { validateRequiredBodyFields } = require('../middlewares/validateFields');
 
 const router = express.Router();
 
 //!Signup
 router.post(
   '/',
-  validateRequiredFields(['username', 'email', 'password', 'confirmPassword']),
+  validateRequiredBodyFields(['username', 'email', 'password', 'confirmPassword']),
   handleCreateUser
 );
 
 //! Email Verification
-router.post('/verification', validateRequiredFields(['code']), handleVerifyEmail);
+router.post('/verification', validateRequiredBodyFields(['code']), handleVerifyEmail);
 
 //! Login
-router.post('/login', validateRequiredFields(['email', 'password']), handleLoginUser);
+router.post('/login', validateRequiredBodyFields(['email', 'password']), handleLoginUser);
 
 //! Get User
 router.get('/', authenticate, handleGetUser);
@@ -40,7 +40,7 @@ router.get('/', authenticate, handleGetUser);
 //! Email Update OTP
 router.post(
   '/email-update-otp',
-  validateRequiredFields(['email']),
+  validateRequiredBodyFields(['email']),
   authenticate,
   handleGenerateEmailUpdateOTP
 );
@@ -48,23 +48,18 @@ router.post(
 //! Update Email
 router.patch(
   '/email-update',
-  validateRequiredFields(['email', 'code']),
+  validateRequiredBodyFields(['email', 'code']),
   authenticate,
   handleEmailUpdate
 );
 
 //! Update User
-router.patch(
-  '/',
-  validateRequiredFields(['username']),
-  authenticate,
-  handleUpdateUser
-);
+router.patch('/', validateRequiredBodyFields(['username']), authenticate, handleUpdateUser);
 
 //! Update Password
 router.patch(
   '/update-password',
-  validateRequiredFields(['currentPassword', 'newPassword', 'confirmPassword']),
+  validateRequiredBodyFields(['currentPassword', 'newPassword', 'confirmPassword']),
   authenticate,
   handleUpdatePassword
 );
@@ -76,7 +71,7 @@ router.post('/logout', authenticate, handleLogoutUser);
 router.post('/logout-all', authenticate, handleLogoutAll);
 
 //! Delete User
-router.delete('/', validateRequiredFields(['password']), authenticate, handleDeleteUser);
+router.delete('/', validateRequiredBodyFields(['password']), authenticate, handleDeleteUser);
 
 //! Forgot Password
 router.post('/forgot-password', handleForgotPassword);

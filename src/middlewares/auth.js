@@ -24,4 +24,17 @@ const authenticate = function (req, res, next) {
   });
 };
 
-module.exports = authenticate;
+const admin = function (req, res, next) {
+  try {
+    if (req.user.role === 'ADMIN') {
+      next();
+    } else {
+      res.status(401).json({ ok: false, message: 'Not Allowed' });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ ok: false, message: 'Admin Authentication Failed' });
+  }
+};
+
+module.exports = { authenticate, admin };
