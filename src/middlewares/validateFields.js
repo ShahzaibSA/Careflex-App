@@ -1,3 +1,5 @@
+'use strict';
+
 const validateRequiredFields = function (requiredFields) {
   return function (req, res, next) {
     const missingFields = [];

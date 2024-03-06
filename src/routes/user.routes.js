@@ -15,7 +15,7 @@ const {
   handleVerifyEmail,
   handleGenerateEmailUpdateOTP,
   handleEmailUpdate
-} = require('../controllers/userCtrls');
+} = require('../controllers/user.controller');
 const authenticate = require('../middlewares/auth');
 const validateRequiredFields = require('../middlewares/validateFields');
 

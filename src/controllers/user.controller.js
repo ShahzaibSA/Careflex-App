@@ -3,8 +3,8 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 
-const User = require('../models/userModel');
-const OTP = require('../models/otpModel');
+const User = require('../models/user.model');
+const OTP = require('../models/otp.model');
 const mailer = require('../utils/mailer');
 const { generateOTP, validateCode } = require('../utils/otp');
 

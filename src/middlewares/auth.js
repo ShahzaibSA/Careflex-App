@@ -1,7 +1,7 @@
 'use strict';
 
 const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');
+const User = require('../models/user.model');
 
 const authenticate = function (req, res, next) {
   const authHeader = req.headers?.authorization || req.headers?.Authorization;
