@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 'use strict';
 
 const express = require('express');
@@ -15,7 +16,7 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET,
     saveUninitialized: false,
-    resave: false
+    resave: false,
   })
 );
 

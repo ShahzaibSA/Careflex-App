@@ -9,7 +9,7 @@ const generateOTP = function () {
       secret = speakeasy.generateSecret({ length: 20 });
       code = speakeasy.totp({
         secret: secret.base32,
-        encoding: 'base32'
+        encoding: 'base32',
       });
     } while (code.toString().length !== 6 || code.toString().startsWith('0'));
 
@@ -24,7 +24,7 @@ const validateCode = function (secret, code) {
     secret: secret,
     encoding: 'base32',
     token: code,
-    window: 6
+    window: 6,
   });
   return isCodeValidate;
 };

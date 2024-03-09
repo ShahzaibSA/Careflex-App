@@ -8,13 +8,13 @@ const job = CronJob.from({
   onTick: async function () {
     const fifteenDaysAgo = new Date();
     fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
-    const data = await User.deleteMany({
+    await User.deleteMany({
       createdAt: { $lt: fifteenDaysAgo },
-      isEmailVerified: false
+      isEmailVerified: false,
     });
     // console.log(data);
   },
-  timeZone: 'UTC'
+  timeZone: 'UTC',
 });
 
 module.exports = job;

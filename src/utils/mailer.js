@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 'use strict';
 
 require('dotenv').config();
@@ -8,12 +9,12 @@ const mailer = async function (mailOptions) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       tls: {
-        rejectUnauthorized: false // Accept self-signed certificates
+        rejectUnauthorized: false, // Accept self-signed certificates
       },
       auth: {
         user: process.env.MAILER_EMAIL,
-        pass: process.env.MAILER_EMAIL_PASS
-      }
+        pass: process.env.MAILER_EMAIL_PASS,
+      },
     });
     transporter.sendMail(mailOptions, function (error, success) {
       if (error) {
@@ -24,7 +25,7 @@ const mailer = async function (mailOptions) {
       }
     });
   } catch (error) {
-    res.status(500).send({ error });
+    throw new Error(error);
   }
 };
 
