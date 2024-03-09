@@ -10,6 +10,7 @@ const generateOTP = function () {
       code = speakeasy.totp({
         secret: secret.base32,
         encoding: 'base32',
+        time: 1453667708, // specified in seconds
       });
     } while (code.toString().length !== 6 || code.toString().startsWith('0'));
 
@@ -25,6 +26,7 @@ const validateCode = function (secret, code) {
     encoding: 'base32',
     token: code,
     window: 6,
+    time: 1453667708, // specified in seconds
   });
   return isCodeValidate;
 };

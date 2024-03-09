@@ -49,6 +49,9 @@ const handleCreateUser = async function (req, res) {
 //! Verify OTP
 const handleVerifyEmail = async function (req, res) {
   const userEnteredCode = req.body.code;
+  if (String(userEnteredCode).length < 6) {
+    return res.status(400).json({ ok: false, message: 'Please enter valid OTP!' });
+  }
   try {
     const otp = await OTP.findOneAndDelete({ code: userEnteredCode });
     if (!otp || !validateCode(otp.secret, userEnteredCode)) {
@@ -77,15 +80,15 @@ const handleVerifyEmail = async function (req, res) {
 const handleLoginUser = async function (req, res) {
   const { email, password } = req.body;
   try {
-    if (req.session?.user?.email === email) {
-      return res.status(400).send({
-        ok: false,
-        message: 'An OTP is sent to your email address. Please verify it to continue!',
-      });
-    }
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ ok: false, message: 'No Account Found. Please Sign Up!' });
+    }
+    if (!user.isEmailVerified) {
+      return res.status(400).send({
+        ok: false,
+        message: `An OTP is sent to ${email}. Please verify it to continue!`,
+      });
     }
     const passwordMatched = await bcrypt.compare(password, user.password);
     if (!passwordMatched) {
