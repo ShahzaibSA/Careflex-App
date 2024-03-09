@@ -8,17 +8,17 @@ const userSchema = new mongoose.Schema(
   {
     isEmailVerified: {
       type: Boolean,
-      default: false
+      default: false,
     },
     role: {
       type: String,
       required: [true, 'Please specify user role'],
-      enum: ['ADMIN', 'HOME', 'GIVER']
+      enum: ['ADMIN', 'HOME', 'GIVER'],
     },
     username: {
       type: String,
       trim: true,
-      lowercase: true
+      lowercase: true,
     },
     email: {
       type: String,
@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema(
         if (!validator.isEmail(value)) {
           throw new Error('Email is invalid!');
         }
-      }
+      },
     },
     password: {
       type: String,
@@ -39,13 +39,11 @@ const userSchema = new mongoose.Schema(
           throw new Error('Password cannot contain "password"');
         }
         if (!validator.isStrongPassword(value)) {
-          throw new Error(
-            'Your password must contain 8 characters, 1 Uppsercase, 1 Lowercase, 1 Number, 1 Symbol'
-          );
+          throw new Error('Your password must contain 8 characters, 1 Uppsercase, 1 Lowercase, 1 Number, 1 Symbol');
         }
-      }
+      },
     },
-    tokens: [{ token: { type: String, required: true } }]
+    tokens: [{ token: { type: String, required: true } }],
   },
   { timestamps: true }
 );
@@ -61,7 +59,7 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.generateToken = async function (time) {
   const user = this;
   const token = jwt.sign({ uid: user._id }, process.env.TOKEN_SECRET, {
-    expiresIn: time || '7d'
+    expiresIn: time || '7d',
   });
 
   user.tokens = user.tokens.concat({ token });

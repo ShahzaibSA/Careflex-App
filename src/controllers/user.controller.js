@@ -3,8 +3,8 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 
-const User = require('../models/userModel');
-const OTP = require('../models/otpModel');
+const User = require('../models/user.model');
+const OTP = require('../models/otp.model');
 const mailer = require('../utils/mailer');
 const { generateOTP, validateCode } = require('../utils/otp');
 
@@ -17,31 +17,29 @@ const handleCreateUser = async function (req, res) {
     }
 
     const userExist = await User.findOne({ email });
-    if (userExist) return res.status(409).json({ ok: false, message: 'Email already exists' });
+    if (userExist) {
+      return res.status(409).json({ ok: false, message: 'Email already exists' });
+    }
 
     const user = new User(req.body);
+    await user.save();
 
     const { code, secret } = generateOTP(user._id);
+    await OTP.create({ code, secret, uid: user._id });
 
     const mailOptions = {
       from: process.env.MAILER_EMAIL,
       to: user.email,
       subject: 'Email Verification',
-      html: `<p>Hello ${user.username.toUpperCase()} here's your <strong>${code}</strong> OTP to verify your email. </p>`
+      html: `<p>Hello ${user.username.toUpperCase()} here's your <strong>${code}</strong> OTP to verify your email. </p>`,
     };
 
     await mailer(mailOptions);
 
-    delete user._doc.isEmailVerified;
-    delete user._doc.tokens;
-    req.session.user = user._doc;
-    req.session.secret = secret;
-    req.session.code = code;
-    req.session.save();
-
-    res.status(200).json({
+    res.status(201).json({
       ok: true,
-      message: 'A verification OTP is sent to your email address. Please verify your OTP.'
+      message: `A verification OTP is sent to ${email}. Please verify your OTP.`,
+      // message: 'A verification OTP is sent to your email address. Please verify your OTP.'
     });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
@@ -51,25 +49,27 @@ const handleCreateUser = async function (req, res) {
 //! Verify OTP
 const handleVerifyEmail = async function (req, res) {
   const userEnteredCode = req.body.code;
-  const { user, secret, code } = req.session;
-  if (!secret) return res.sendStatus(400);
+  if (String(userEnteredCode).length < 6) {
+    return res.status(400).json({ ok: false, message: 'Please enter valid OTP!' });
+  }
   try {
-    // const otp = await OTP.findOneAndDelete({ code, uid: user._id });
-    if (code !== userEnteredCode || !validateCode(secret, userEnteredCode)) {
+    const otp = await OTP.findOneAndDelete({ code: userEnteredCode });
+    if (!otp || !validateCode(otp.secret, userEnteredCode)) {
       return res.status(400).json({ ok: false, message: 'Please enter a valid OTP.' });
     }
 
-    const saveUser = new User({ ...user, isEmailVerified: true });
-    await saveUser.save();
-    const token = await saveUser.generateToken();
+    const user = await User.findOne({ _id: otp.uid });
+    if (!user) return res.status(400).json({ ok: false, error: 'Please sign up again.' });
+    user.isEmailVerified = true;
+    await user.save();
 
-    req.session.destroy();
+    const token = await user.generateToken();
 
     res.status(201).json({
       ok: true,
       token,
-      user: saveUser,
-      message: 'Email successfully verified.'
+      user: user,
+      message: 'Email successfully verified.',
     });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
@@ -80,15 +80,15 @@ const handleVerifyEmail = async function (req, res) {
 const handleLoginUser = async function (req, res) {
   const { email, password } = req.body;
   try {
-    if (req.session?.user?.email == email) {
-      return res.status(400).send({
-        ok: false,
-        message: 'An OTP is sent to your email address. Please verify it to continue!'
-      });
-    }
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ ok: false, message: 'No Account Found. Please Sign Up!' });
+    }
+    if (!user.isEmailVerified) {
+      return res.status(400).send({
+        ok: false,
+        message: `An OTP is sent to ${email}. Please verify it to continue!`,
+      });
     }
     const passwordMatched = await bcrypt.compare(password, user.password);
     if (!passwordMatched) {
@@ -108,7 +108,7 @@ const handleGetUser = function (req, res) {
     res.status(200).json({
       ok: true,
       user: req.user,
-      token: req.token
+      token: req.token,
     });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
@@ -124,8 +124,9 @@ const handleGenerateEmailUpdateOTP = async function (req, res) {
   try {
     if (email !== user.email) {
       const emailExists = await User.findOne({ email: email });
-      if (emailExists)
+      if (emailExists) {
         return res.status(400).json({ ok: false, message: 'The email already in use.' });
+      }
     }
 
     const { code, secret } = generateOTP();
@@ -137,7 +138,7 @@ const handleGenerateEmailUpdateOTP = async function (req, res) {
       from: process.env.MAILER_EMAIL,
       to: email,
       subject: 'Email Verification',
-      html: `<p>Hello ${user.username.toUpperCase()} here's your <strong>${code}</strong> OTP to verify your email. </p>`
+      html: `<p>Hello ${user.username.toUpperCase()} here's your <strong>${code}</strong> OTP to verify your email. </p>`,
     };
     await mailer(mailOptions);
 
@@ -147,7 +148,7 @@ const handleGenerateEmailUpdateOTP = async function (req, res) {
 
     res.status(200).json({
       ok: true,
-      message: 'A verification OTP is sent to entered email address. Please verify your OTP.'
+      message: 'A verification OTP is sent to entered email address. Please verify your OTP.',
     });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
@@ -174,8 +175,9 @@ const handleEmailUpdate = async function (req, res) {
       return res.status(400).json({ ok: false, message: 'The email already in use.' });
     }
 
-    if (!validateCode(secret, code))
+    if (!validateCode(secret, code)) {
       return res.status(400).json({ ok: false, message: 'OTP is not valid.' });
+    }
 
     await OTP.findOneAndDelete({ code, uid: user._id });
 
@@ -187,7 +189,7 @@ const handleEmailUpdate = async function (req, res) {
 
     res.status(200).json({
       ok: true,
-      message: 'Email successfully updated.'
+      message: 'Email successfully updated.',
     });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
@@ -203,8 +205,9 @@ const handleUpdateUser = async function (req, res) {
     const allowedUpdates = ['username'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
-    if (!isValidOperation)
+    if (!isValidOperation) {
       return res.status(400).send({ ok: false, message: 'Invalid updates!' });
+    }
 
     updates.forEach((update) => (req.user[update] = body[update]));
     await user.save();
@@ -224,9 +227,10 @@ const handleUpdatePassword = async function (req, res) {
 
     const passwordMatched = await bcrypt.compare(currentPassword, user.password);
     if (!passwordMatched) {
-      return res
-        .status(400)
-        .json({ ok: false, message: 'Your current password was entered incorrectly.' });
+      return res.status(400).json({
+        ok: false,
+        message: 'Your current password was entered incorrectly.',
+      });
     }
 
     if (newPassword !== confirmPassword) {
@@ -234,9 +238,10 @@ const handleUpdatePassword = async function (req, res) {
     }
 
     if (newPassword === currentPassword) {
-      return res
-        .status(400)
-        .json({ ok: false, message: 'New password must be different from current password.' });
+      return res.status(400).json({
+        ok: false,
+        message: 'New password must be different from current password.',
+      });
     }
 
     user.password = newPassword;
@@ -267,7 +272,10 @@ const handleLogoutAll = async function (req, res) {
     user.tokens = user.tokens.filter((tokens) => tokens.token === req.token);
     await user.save();
 
-    res.status(200).json({ ok: true, message: 'All other devices successfully Logged out.' });
+    res.status(200).json({
+      ok: true,
+      message: 'All other devices successfully Logged out.',
+    });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
   }
@@ -280,9 +288,7 @@ const handleDeleteUser = async function (req, res) {
 
     const passwordMatched = await bcrypt.compare(password, user.password);
     if (!passwordMatched) {
-      return res
-        .status(400)
-        .json({ ok: false, message: 'Please enter your password correctly.' });
+      return res.status(400).json({ ok: false, message: 'Please enter your password correctly.' });
     }
     await User.deleteOne({ email: user.email });
     res.status(200).json({ ok: true, message: 'Account successfully deleted.' });
@@ -295,8 +301,9 @@ const handleForgotPassword = async function (req, res) {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
-    if (!user)
+    if (!user) {
       return res.status(404).json({ ok: false, message: 'No user found with this email.' });
+    }
 
     const { code, secret } = generateOTP();
 
@@ -307,7 +314,7 @@ const handleForgotPassword = async function (req, res) {
       from: process.env.MAILER_EMAIL,
       to: email,
       subject: 'Reset Password OTP',
-      html: `<p>Hello ${user.username.toUpperCase()} here's your <strong>${code}</strong> OTP to reset your password. </p>`
+      html: `<p>Hello ${user.username.toUpperCase()} here's your <strong>${code}</strong> OTP to reset your password. </p>`,
     };
 
     await mailer(mailOptions);
@@ -318,7 +325,7 @@ const handleForgotPassword = async function (req, res) {
 
     res.json({
       ok: true,
-      message: 'We have sent an OTP to your email. Please check your inbox.'
+      message: 'We have sent an OTP to your email. Please check your inbox.',
     });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
@@ -334,14 +341,16 @@ const handleResetPassword = async function (req, res) {
       return res.status(400).json({ ok: false, message: 'Please enter a password.' });
     }
 
-    if (!validateCode(secret, code))
+    if (!validateCode(secret, code)) {
       return res.status(400).json({ ok: false, message: 'Please enter a valid OTP.' });
+    }
 
     const otp = await OTP.findOne({ code, uid });
     await OTP.deleteMany({ uid });
 
-    if (!otp)
+    if (!otp) {
       return res.status(400).json({ ok: false, message: 'OTP has been already used.' });
+    }
 
     const user = await User.findOne({ _id: otp.uid });
 
@@ -372,5 +381,5 @@ module.exports = {
   handleResetPassword,
   handleVerifyEmail,
   handleGenerateEmailUpdateOTP,
-  handleEmailUpdate
+  handleEmailUpdate,
 };

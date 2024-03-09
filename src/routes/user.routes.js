@@ -14,19 +14,15 @@ const {
   handleResetPassword,
   handleVerifyEmail,
   handleGenerateEmailUpdateOTP,
-  handleEmailUpdate
-} = require('../controllers/userCtrls');
+  handleEmailUpdate,
+} = require('../controllers/user.controller');
 const authenticate = require('../middlewares/auth');
 const validateRequiredFields = require('../middlewares/validateFields');
 
 const router = express.Router();
 
 //!Signup
-router.post(
-  '/',
-  validateRequiredFields(['username', 'email', 'password', 'confirmPassword']),
-  handleCreateUser
-);
+router.post('/', validateRequiredFields(['username', 'email', 'password', 'confirmPassword']), handleCreateUser);
 
 //! Email Verification
 router.post('/verification', validateRequiredFields(['code']), handleVerifyEmail);
@@ -38,28 +34,13 @@ router.post('/login', validateRequiredFields(['email', 'password']), handleLogin
 router.get('/', authenticate, handleGetUser);
 
 //! Email Update OTP
-router.post(
-  '/email-update-otp',
-  validateRequiredFields(['email']),
-  authenticate,
-  handleGenerateEmailUpdateOTP
-);
+router.post('/email-update-otp', validateRequiredFields(['email']), authenticate, handleGenerateEmailUpdateOTP);
 
 //! Update Email
-router.patch(
-  '/email-update',
-  validateRequiredFields(['email', 'code']),
-  authenticate,
-  handleEmailUpdate
-);
+router.patch('/email-update', validateRequiredFields(['email', 'code']), authenticate, handleEmailUpdate);
 
 //! Update User
-router.patch(
-  '/',
-  validateRequiredFields(['username']),
-  authenticate,
-  handleUpdateUser
-);
+router.patch('/', validateRequiredFields(['username']), authenticate, handleUpdateUser);
 
 //! Update Password
 router.patch(

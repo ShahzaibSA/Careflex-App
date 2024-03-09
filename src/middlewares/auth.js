@@ -1,12 +1,11 @@
 'use strict';
 
 const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');
+const User = require('../models/user.model');
 
 const authenticate = function (req, res, next) {
   const authHeader = req.headers?.authorization || req.headers?.Authorization;
-  if (!authHeader?.startsWith('Bearer '))
-    return res.status(401).json({ ok: false, message: 'Unauthorized' }); //! Unauthorized
+  if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ ok: false, message: 'Unauthorized' }); //! Unauthorized
 
   const token = authHeader.split(' ')[1];
 

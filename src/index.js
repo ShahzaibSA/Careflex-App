@@ -1,9 +1,12 @@
+/* eslint-disable no-console */
 'use strict';
+
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const connectDB = require('./db');
-const userRoutes = require('./routes/userRoutes');
+const userRoutes = require('./routes/user.routes.js');
+const job = require('./jobs/deleteUnverifiedUsers.js');
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -13,7 +16,7 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET,
     saveUninitialized: false,
-    resave: false
+    resave: false,
   })
 );
 
@@ -56,6 +59,10 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+//! Job to Delete Unverified User
+job.start();
+// console.log(job.nextDate());
 
 //! Server Starting
 app.listen(port, () => console.log('Server is Running on port', port));
