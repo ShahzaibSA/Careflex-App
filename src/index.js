@@ -3,6 +3,7 @@
 
 const express = require('express');
 const session = require('express-session');
+const swaggerUi = require('swagger-ui-express');
 const bodyParser = require('body-parser');
 const connectDB = require('./db');
 const userRoutes = require('./routes/user.routes.js');
@@ -29,6 +30,9 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
+
+//! Swagger Api Documentation
+// app.use('/api/v1/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 //! API ROUTES
 app.use('/v1/users', userRoutes);
