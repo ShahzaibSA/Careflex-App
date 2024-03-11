@@ -1,0 +1,746 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "CAREFLEX",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Users"
+    }
+  ],
+  "paths": {
+    "/v1/users/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "email": "shahzaibphones@gmail.com",
+                  "password": "Test@123"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "x-powered-by": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "access-control-allow-origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "access-control-allow-methods": {
+                "schema": {
+                  "type": "string",
+                  "example": "GET, POST, PUT, PATCH DELETE"
+                }
+              },
+              "access-control-allow-headers": {
+                "schema": {
+                  "type": "string",
+                  "example": "Content-Type, Authorization"
+                }
+              },
+              "content-type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "content-length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "389"
+                }
+              },
+              "etag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"185-gvltFvSBRmqMbSaj0FVJNS3VRIg\""
+                }
+              },
+              "date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sun, 10 Mar 2024 00:19:57 GMT"
+                }
+              },
+              "server": {
+                "schema": {
+                  "type": "string",
+                  "example": "railway"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "ok": true,
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NWVjZmMxZjQ0OGFmODIxMWE3ZmVlMjUiLCJpYXQiOjE3MTAwMjk5OTcsImV4cCI6MTcxMDYzNDc5N30._OSFRh8QnUlLrsg7_6PzsAZNgIjfpHbWlN7zmsHved8",
+                  "user": {
+                    "_id": "65ecfc1f448af8211a7fee25",
+                    "role": "HOME",
+                    "username": "shahzaib ahmed",
+                    "email": "shahzaibsaa1@gmail.com",
+                    "createdAt": "2024-03-10T00:17:35.991Z",
+                    "updatedAt": "2024-03-10T00:19:57.377Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "x-powered-by": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "access-control-allow-origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "access-control-allow-methods": {
+                "schema": {
+                  "type": "string",
+                  "example": "GET, POST, PUT, PATCH DELETE"
+                }
+              },
+              "access-control-allow-headers": {
+                "schema": {
+                  "type": "string",
+                  "example": "Content-Type, Authorization"
+                }
+              },
+              "content-type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "content-length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "58"
+                }
+              },
+              "etag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"3a-p97ofcaMnBrTm4ndvEV5fa3ehIs\""
+                }
+              },
+              "date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sun, 10 Mar 2024 00:16:46 GMT"
+                }
+              },
+              "server": {
+                "schema": {
+                  "type": "string",
+                  "example": "railway"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "examples": {
+                  "example-0": {
+                    "summary": "Error Login",
+                    "value": {
+                      "ok": false,
+                      "message": "No Account Found. Please Sign Up!"
+                    }
+                  },
+                  "example-1": {
+                    "summary": "Invalid Login",
+                    "value": {
+                      "ok": false,
+                      "message": "Invalid Email or Password"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/forgot-password": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Forgot Password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "email": "shahzaibphones@gmail.com"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/reset-password": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Reset Password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "password": "Test@12345",
+                  "code": 962333
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get Uer",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "username": "Shahzaib Ahmed Changed"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/v1/users": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Sign up",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "role": "HOME",
+                  "username": "Shahzaib Ahmed",
+                  "email": "shahzaibphones@gmail.com",
+                  "password": "Test@123",
+                  "confirmPassword": "Test@123"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "x-powered-by": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "access-control-allow-origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "access-control-allow-methods": {
+                "schema": {
+                  "type": "string",
+                  "example": "GET, POST, PUT, PATCH DELETE"
+                }
+              },
+              "access-control-allow-headers": {
+                "schema": {
+                  "type": "string",
+                  "example": "Content-Type, Authorization"
+                }
+              },
+              "content-type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "content-length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "101"
+                }
+              },
+              "etag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"65-m4lsk+HiJ5UQEHxZZ2qZpCJX1Is\""
+                }
+              },
+              "date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sun, 10 Mar 2024 00:17:36 GMT"
+                }
+              },
+              "server": {
+                "schema": {
+                  "type": "string",
+                  "example": "railway"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "ok": true,
+                  "message": "A verification OTP is sent to shahzaibsaa1@gmail.com. Please verify your OTP."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/verification": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Email Verification",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "code": 518249
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "x-powered-by": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "access-control-allow-origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "access-control-allow-methods": {
+                "schema": {
+                  "type": "string",
+                  "example": "GET, POST, PUT, PATCH DELETE"
+                }
+              },
+              "access-control-allow-headers": {
+                "schema": {
+                  "type": "string",
+                  "example": "Content-Type, Authorization"
+                }
+              },
+              "content-type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "content-length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "430"
+                }
+              },
+              "etag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"1ae-Q6keHuf59TI/wkibeWYPqRR/ISY\""
+                }
+              },
+              "date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sun, 10 Mar 2024 00:18:37 GMT"
+                }
+              },
+              "server": {
+                "schema": {
+                  "type": "string",
+                  "example": "railway"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "ok": true,
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NWVjZmMxZjQ0OGFmODIxMWE3ZmVlMjUiLCJpYXQiOjE3MTAwMjk5MTcsImV4cCI6MTcxMDYzNDcxN30.jY0SaHK33l8awVU5KH8rD2R3wElE8rrAGADazcJfdRA",
+                  "user": {
+                    "_id": "65ecfc1f448af8211a7fee25",
+                    "role": "HOME",
+                    "username": "shahzaib ahmed",
+                    "email": "shahzaibsaa1@gmail.com",
+                    "createdAt": "2024-03-10T00:17:35.991Z",
+                    "updatedAt": "2024-03-10T00:18:37.519Z"
+                  },
+                  "message": "Email successfully verified."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "x-powered-by": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "access-control-allow-origin": {
+                "schema": {
+                  "type": "string",
+                  "example": "*"
+                }
+              },
+              "access-control-allow-methods": {
+                "schema": {
+                  "type": "string",
+                  "example": "GET, POST, PUT, PATCH DELETE"
+                }
+              },
+              "access-control-allow-headers": {
+                "schema": {
+                  "type": "string",
+                  "example": "Content-Type, Authorization"
+                }
+              },
+              "content-type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "content-length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "50"
+                }
+              },
+              "etag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"32-erfBR4Yu9jGL/A/J/vRZNlUXk5I\""
+                }
+              },
+              "date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sun, 10 Mar 2024 00:18:12 GMT"
+                }
+              },
+              "server": {
+                "schema": {
+                  "type": "string",
+                  "example": "railway"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "ok": false,
+                  "message": "Please enter a valid OTP."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/logout": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Logout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": ""
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/logout-all": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Logout All",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": ""
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/email-update-otp": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Email Update Otp",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "email": "shahzaibsaa1@gmail.com"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/email-update": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Email Update",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "email": "shahzaibsaa1@gmail.com",
+                  "code": "905562"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/update-password": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update Password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "currentPassword": "Test@12345",
+                  "newPassword": "Test@123",
+                  "confirmPassword": "Test@123"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}

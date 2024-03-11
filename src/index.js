@@ -1,11 +1,13 @@
 /* eslint-disable no-console */
 'use strict';
 
-const express = require('express');
-const session = require('express-session');
 const cors = require('cors');
-const swaggerUi = require('swagger-ui-express');
+const express = require('express');
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const swaggerUi = require('swagger-ui-express');
+
+const swaggerFile = require('../swagger-output.json');
 const connectDB = require('./db');
 const userRoutes = require('./routes/user.routes.js');
 const job = require('./jobs/deleteUnverifiedUsers.js');
@@ -34,7 +36,7 @@ app.use((req, res, next) => {
 });
 
 //! Swagger Api Documentation
-// app.use('/api/v1/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
+app.use('/api/v1/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 //! API ROUTES
 app.use('/v1/users', userRoutes);
