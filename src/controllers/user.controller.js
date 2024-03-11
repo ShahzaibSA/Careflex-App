@@ -308,7 +308,7 @@ const handleForgotPassword = async function (req, res) {
     const { code, secret } = generateOTP();
 
     await OTP.deleteMany({ uid: user._id });
-    const otp = await OTP.create({ code, uid: user._id });
+    const otp = await OTP.create({ code, secret, uid: user._id });
 
     const mailOptions = {
       from: process.env.MAILER_EMAIL,
@@ -325,7 +325,7 @@ const handleForgotPassword = async function (req, res) {
 
     res.json({
       ok: true,
-      message: 'We have sent an OTP to your email. Please check your inbox.',
+      message: `We have sent an OTP to ${email}. Please check your inbox.`,
     });
   } catch (error) {
     res.status(500).json({ ok: false, error: error?.message || error });
@@ -346,7 +346,6 @@ const handleResetPassword = async function (req, res) {
     }
 
     const otp = await OTP.findOne({ code, uid });
-    await OTP.deleteMany({ uid });
 
     if (!otp) {
       return res.status(400).json({ ok: false, message: 'OTP has been already used.' });
@@ -361,6 +360,8 @@ const handleResetPassword = async function (req, res) {
     user.tokens = [];
     user.password = password;
     await user.save();
+
+    await OTP.deleteMany({ uid });
 
     res.status(200).json({ ok: true, message: 'Password successfully reset.' });
   } catch (error) {
