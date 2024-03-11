@@ -3,6 +3,7 @@
 
 const express = require('express');
 const session = require('express-session');
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const bodyParser = require('body-parser');
 const connectDB = require('./db');
@@ -23,6 +24,7 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors());
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -37,22 +39,9 @@ app.use((req, res, next) => {
 //! API ROUTES
 app.use('/v1/users', userRoutes);
 
-app.use((error, req, res, next) => {
-  console.log('index-----error', error);
-  const status = error.statusCode || 500;
-  const message = error.message;
-  res.status(status).json({ message: message });
-});
-
 //! DATABASE CONNECTION
 connectDB();
 
-app.use((error, req, res, next) => {
-  console.log('index-----error', error);
-  const status = error.statusCode || 500;
-  const message = error.message;
-  res.status(status).json({ message: message });
-});
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
