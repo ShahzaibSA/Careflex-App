@@ -1,6 +1,5 @@
 'use strict';
 const mongoose = require('mongoose');
-const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -17,31 +16,16 @@ const userSchema = new mongoose.Schema(
     },
     username: {
       type: String,
-      trim: true,
-      lowercase: true,
+      required: true,
     },
     email: {
       type: String,
       unique: true,
-      trim: true,
-      lowercase: true,
-      validate(value) {
-        if (!validator.isEmail(value)) {
-          throw new Error('Email is invalid!');
-        }
-      },
+      required: true,
     },
     password: {
       type: String,
-      trim: true,
-      validate(value) {
-        if (value.toLowerCase().includes('password')) {
-          throw new Error('Password cannot contain "password"');
-        }
-        if (!validator.isStrongPassword(value)) {
-          throw new Error('Your password must contain 8 characters, 1 Uppsercase, 1 Lowercase, 1 Number, 1 Symbol');
-        }
-      },
+      required: true,
     },
     tokens: [{ token: { type: String, required: true } }],
   },

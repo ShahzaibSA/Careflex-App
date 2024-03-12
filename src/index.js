@@ -13,6 +13,7 @@ const userRoutes = require('./routes/user.routes.js');
 const shiftRoutes = require('./routes/shift.routes.js');
 const job = require('./jobs/deleteUnverifiedUsers.js');
 const authenticate = require('./middlewares/auth.js');
+const errorMiddleware = require('./middlewares/error.middleware.js');
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -45,6 +46,9 @@ app.use('/v1/users', userRoutes);
 
 //! API ROUTES
 app.use('/v1/shift', authenticate, shiftRoutes);
+
+//! Error Middleware
+app.use(errorMiddleware);
 
 //! DATABASE CONNECTION
 connectDB();

@@ -7,18 +7,25 @@ const User = require('../models/user.model');
 const OTP = require('../models/otp.model');
 const mailer = require('../utils/mailer');
 const { generateOTP, validateCode } = require('../utils/otp');
+const { BadRequestException, NotFoundException } = require('../exceptions');
+const {
+  userSignupSchema,
+  loginSchema,
+  updateUserSchema,
+  updatePasswordSchema,
+  forgotPasswordSchema,
+  deleteUserPasswordSchema,
+  resetPasswordSchema,
+} = require('../validations/user.validation');
 
 //!Signup
-const handleCreateUser = async function (req, res) {
-  const { password, confirmPassword, email } = req.body;
+const handleCreateUser = async function (req, res, next) {
   try {
-    if (password !== confirmPassword) {
-      return res.status(404).json({ ok: false, message: 'Password does not match!' });
-    }
+    const body = await userSignupSchema.validateAsync(req.body);
 
-    const userExist = await User.findOne({ email });
+    const userExist = await User.findOne({ email: body.email });
     if (userExist) {
-      return res.status(409).json({ ok: false, message: 'Email already exists' });
+      return next({ status: 409, message: 'Email already exists' });
     }
 
     const user = new User(req.body);
@@ -38,28 +45,30 @@ const handleCreateUser = async function (req, res) {
 
     res.status(201).json({
       ok: true,
-      message: `A verification OTP is sent to ${email}. Please verify your OTP.`,
-      // message: 'A verification OTP is sent to your email address. Please verify your OTP.'
+      message: `A verification OTP is sent to ${body.email}. Please verify your OTP.`,
     });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error?.message || error });
+    return next(error);
+    // res.status(500).json({ ok: false, error: error?.message || error });
   }
 };
 
 //! Verify OTP
-const handleVerifyEmail = async function (req, res) {
+const handleVerifyEmail = async function (req, res, next) {
   const userEnteredCode = req.body.code;
   if (String(userEnteredCode).length < 6) {
-    return res.status(400).json({ ok: false, message: 'Please enter valid OTP!' });
+    return next(new BadRequestException('Please enter valid OTP!'));
   }
   try {
     const otp = await OTP.findOneAndDelete({ code: userEnteredCode });
     if (!otp || !validateCode(otp.secret, userEnteredCode)) {
-      return res.status(400).json({ ok: false, message: 'Please enter a valid OTP.' });
+      return next(new BadRequestException('Please enter valid OTP!'));
     }
 
     const user = await User.findOne({ _id: otp.uid });
-    if (!user) return res.status(400).json({ ok: false, error: 'Please sign up again.' });
+    if (!user) {
+      return next(new NotFoundException('Please sign up again.'));
+    }
     user.isEmailVerified = true;
     await user.save();
 
@@ -68,50 +77,47 @@ const handleVerifyEmail = async function (req, res) {
     res.status(201).json({
       ok: true,
       token,
-      user: user,
+      data: { user },
       message: 'Email successfully verified.',
     });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error?.message || error });
+    next(error);
   }
 };
 
 //!Login
-const handleLoginUser = async function (req, res) {
-  const { email, password } = req.body;
+const handleLoginUser = async function (req, res, next) {
   try {
-    const user = await User.findOne({ email });
+    const body = await loginSchema.validateAsync(req.body);
+    const user = await User.findOne({ email: body.email });
     if (!user) {
-      return res.status(400).json({ ok: false, message: 'No Account Found. Please Sign Up!' });
+      return next(new BadRequestException('No Account Found. Please Sign Up!'));
     }
     if (!user.isEmailVerified) {
-      return res.status(400).send({
-        ok: false,
-        message: `An OTP is sent to ${email}. Please verify it to continue!`,
-      });
+      return next(new BadRequestException(`An OTP is sent to ${body.email}. Please verify it to continue!`));
     }
-    const passwordMatched = await bcrypt.compare(password, user.password);
+    const passwordMatched = await bcrypt.compare(body.password, user.password);
     if (!passwordMatched) {
-      return res.status(400).json({ ok: false, message: 'Invalid Email or Password' });
+      return next(new BadRequestException('Invalid Email or Password'));
     }
 
     const token = await user.generateToken();
-    res.status(200).json({ ok: true, token, user });
+    res.status(200).json({ ok: true, token, data: { user } });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error?.message || error });
+    next(error);
   }
 };
 
 //! Get User
-const handleGetUser = function (req, res) {
+const handleGetUser = function (req, res, next) {
   try {
     res.status(200).json({
       ok: true,
-      user: req.user,
+      data: { user: req.user },
       token: req.token,
     });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error?.message || error });
+    next(error);
   }
 };
 
@@ -197,76 +203,71 @@ const handleEmailUpdate = async function (req, res) {
 };
 
 //! Update User
-const handleUpdateUser = async function (req, res) {
-  const { body } = req;
+const handleUpdateUser = async function (req, res, next) {
+  // const { body } = req;
   const user = req.user;
   try {
+    const body = await updateUserSchema.validateAsync(req.body);
     const updates = Object.keys(body);
     const allowedUpdates = ['username'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
     if (!isValidOperation) {
-      return res.status(400).send({ ok: false, message: 'Invalid updates!' });
+      return next(new BadRequestException('Invalid updates!'));
     }
 
     updates.forEach((update) => (req.user[update] = body[update]));
     await user.save();
 
-    res.status(200).json({ ok: true, user, message: 'Profile successfully updated.' });
+    res.status(200).json({ ok: true, data: { user }, message: 'Profile successfully updated.' });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error?.message || error });
+    next(error);
   }
 };
 
 //! Update Password
-const handleUpdatePassword = async function (req, res) {
+const handleUpdatePassword = async function (req, res, next) {
   try {
-    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const { currentPassword, newPassword, confirmPassword } = await updatePasswordSchema.validateAsync(req.body);
 
     const user = req.user;
 
     const passwordMatched = await bcrypt.compare(currentPassword, user.password);
     if (!passwordMatched) {
-      return res.status(400).json({
-        ok: false,
-        message: 'Your current password was entered incorrectly.',
-      });
+      return next(new BadRequestException('Your current password was entered incorrectly.'));
     }
 
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ ok: false, message: 'New password does not match.' });
+      return next(new BadRequestException('New password must be different from current password.'));
     }
 
     if (newPassword === currentPassword) {
-      return res.status(400).json({
-        ok: false,
-        message: 'New password must be different from current password.',
-      });
+      return next(new BadRequestException('New password must be different from current password.'));
     }
 
     user.password = newPassword;
     await user.save();
 
-    res.status(200).json({ ok: true, user, message: 'Password successfully updated.' });
+    res.status(200).json({ ok: true, data: { user }, message: 'Password successfully updated.' });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error?.message || error });
+    next(error);
   }
 };
 
 //! Logout User
-const handleLogoutUser = async function (req, res) {
+const handleLogoutUser = async function (req, res, next) {
   try {
     const { user } = req;
     user.tokens = user.tokens.filter((tokens) => tokens.token !== req.token);
     await user.save();
     res.status(200).json({ ok: true, message: 'User successfully Logged out.' });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error?.message || error });
+    next(error);
   }
 };
 
 //! Logout other devices
-const handleLogoutAll = async function (req, res) {
+const handleLogoutAll = async function (req, res, next) {
   try {
     const { user } = req;
     user.tokens = user.tokens.filter((tokens) => tokens.token === req.token);
@@ -277,32 +278,32 @@ const handleLogoutAll = async function (req, res) {
       message: 'All other devices successfully Logged out.',
     });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error?.message || error });
+    next(error);
   }
 };
 
-const handleDeleteUser = async function (req, res) {
+const handleDeleteUser = async function (req, res, next) {
   try {
-    const { password } = req.body;
     const user = req.user;
+    const { password } = await deleteUserPasswordSchema.validateAsync(req.body);
 
     const passwordMatched = await bcrypt.compare(password, user.password);
     if (!passwordMatched) {
-      return res.status(400).json({ ok: false, message: 'Please enter your password correctly.' });
+      return next(new BadRequestException('Please enter your password correctly.'));
     }
     await User.deleteOne({ email: user.email });
     res.status(200).json({ ok: true, message: 'Account successfully deleted.' });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error?.message || error });
+    next(error);
   }
 };
 
-const handleForgotPassword = async function (req, res) {
+const handleForgotPassword = async function (req, res, next) {
   try {
-    const { email } = req.body;
+    const { email } = await forgotPasswordSchema.validateAsync(req.body);
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ ok: false, message: 'No user found with this email.' });
+      return next(new NotFoundException('No user found with this email.'));
     }
 
     const { code, secret } = generateOTP();
@@ -325,37 +326,43 @@ const handleForgotPassword = async function (req, res) {
 
     res.json({
       ok: true,
+      code,
       message: `We have sent an OTP to ${email}. Please check your inbox.`,
     });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error?.message || error });
+    next(error);
   }
 };
 
-const handleResetPassword = async function (req, res) {
+const handleResetPassword = async function (req, res, next) {
   try {
     const { secret, uid } = req.session;
-    const { password, code } = req.body;
+    const code = req.body.code;
+    if (String(code).length < 6) {
+      return next(new BadRequestException('Please enter valid OTP!'));
+    }
+
+    const { password } = await resetPasswordSchema.validateAsync(req.body);
 
     if (!password) {
-      return res.status(400).json({ ok: false, message: 'Please enter a password.' });
+      return next(new BadRequestException('Please enter a password.'));
     }
 
     if (!validateCode(secret, code)) {
-      return res.status(400).json({ ok: false, message: 'Please enter a valid OTP.' });
+      return next(new BadRequestException('Please enter a valid OTP.'));
     }
 
     const otp = await OTP.findOne({ code, uid });
 
     if (!otp) {
-      return res.status(400).json({ ok: false, message: 'OTP has been already used.' });
+      return next(new BadRequestException('OTP has been already used.'));
     }
 
     const user = await User.findOne({ _id: otp.uid });
 
     const passwordMatched = await bcrypt.compare(password, user.password);
     if (passwordMatched) {
-      return res.status(400).json({ ok: false, message: 'Please enter a new password.' });
+      return next(new BadRequestException('Please enter a new password.'));
     }
     user.tokens = [];
     user.password = password;
@@ -365,7 +372,7 @@ const handleResetPassword = async function (req, res) {
 
     res.status(200).json({ ok: true, message: 'Password successfully reset.' });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error?.message || error });
+    next(error);
   }
 };
 
