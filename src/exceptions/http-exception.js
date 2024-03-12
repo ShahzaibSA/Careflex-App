@@ -1,3 +1,5 @@
+'use strict';
+
 const HttpStatus = {
   Forbidden: 403,
   HardReject: 411,
