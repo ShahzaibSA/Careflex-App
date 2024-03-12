@@ -326,7 +326,6 @@ const handleForgotPassword = async function (req, res, next) {
 
     res.json({
       ok: true,
-      code,
       message: `We have sent an OTP to ${email}. Please check your inbox.`,
     });
   } catch (error) {
