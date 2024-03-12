@@ -17,38 +17,32 @@ const {
   handleEmailUpdate,
 } = require('../controllers/user.controller');
 const authenticate = require('../middlewares/auth');
-const validateRequiredFields = require('../middlewares/validateFields');
 
 const router = express.Router();
 
 //!Signup
-router.post('/', validateRequiredFields(['username', 'email', 'password', 'confirmPassword']), handleCreateUser);
+router.post('/', handleCreateUser);
 
 //! Email Verification
-router.post('/verification', validateRequiredFields(['code']), handleVerifyEmail);
+router.post('/verification', handleVerifyEmail);
 
 //! Login
-router.post('/login', validateRequiredFields(['email', 'password']), handleLoginUser);
+router.post('/login', handleLoginUser);
 
 //! Get User
 router.get('/', authenticate, handleGetUser);
 
 //! Email Update OTP
-router.post('/email-update-otp', validateRequiredFields(['email']), authenticate, handleGenerateEmailUpdateOTP);
+router.post('/email-update-otp', authenticate, handleGenerateEmailUpdateOTP);
 
 //! Update Email
-router.patch('/email-update', validateRequiredFields(['email', 'code']), authenticate, handleEmailUpdate);
+router.patch('/email-update', authenticate, handleEmailUpdate);
 
 //! Update User
-router.patch('/', validateRequiredFields(['username']), authenticate, handleUpdateUser);
+router.patch('/', authenticate, handleUpdateUser);
 
 //! Update Password
-router.patch(
-  '/update-password',
-  validateRequiredFields(['currentPassword', 'newPassword', 'confirmPassword']),
-  authenticate,
-  handleUpdatePassword
-);
+router.patch('/update-password', authenticate, handleUpdatePassword);
 
 //! Logout User
 router.post('/logout', authenticate, handleLogoutUser);
@@ -57,7 +51,7 @@ router.post('/logout', authenticate, handleLogoutUser);
 router.post('/logout-all', authenticate, handleLogoutAll);
 
 //! Delete User
-router.delete('/', validateRequiredFields(['password']), authenticate, handleDeleteUser);
+router.delete('/', authenticate, handleDeleteUser);
 
 //! Forgot Password
 router.post('/forgot-password', handleForgotPassword);
