@@ -10,7 +10,9 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('../swagger-output.json');
 const connectDB = require('./db');
 const userRoutes = require('./routes/user.routes.js');
+const shiftRoutes = require('./routes/shift.routes.js');
 const job = require('./jobs/deleteUnverifiedUsers.js');
+const authenticate = require('./middlewares/auth.js');
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -40,6 +42,9 @@ app.use('/api/v1/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 //! API ROUTES
 app.use('/v1/users', userRoutes);
+
+//! API ROUTES
+app.use('/v1/shift', authenticate, shiftRoutes);
 
 //! DATABASE CONNECTION
 connectDB();
