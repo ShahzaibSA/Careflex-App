@@ -1,10 +1,10 @@
 'use strict';
 const express = require('express');
-const authenticate = require('../middlewares/auth');
 const { handleCreateShift } = require('../controllers/shift.controller');
+const isCareHomeUser = require('../middlewares/isCareHomeUser');
 
 const router = express.Router();
 
-router.post('/', authenticate, handleCreateShift);
+router.post('/', isCareHomeUser, handleCreateShift);
 
 module.exports = router;
