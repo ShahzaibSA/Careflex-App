@@ -19,6 +19,19 @@ const handleCreateShift = async function (req, res, next) {
   }
 };
 
+//! Get All Shifts
+const handleGetAllShifts = async function (req, res, next) {
+  try {
+    const shift = await Shift.find();
+    delete shift._id;
+    delete shift.__v;
+    res.status(200).json({ ok: true, data: { shift }, message: 'All Shifts successfully fetched.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   handleCreateShift,
+  handleGetAllShifts,
 };
