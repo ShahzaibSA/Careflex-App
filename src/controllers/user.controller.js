@@ -28,7 +28,7 @@ const handleCreateUser = async function (req, res, next) {
       return next({ status: 409, message: 'Email already exist' });
     }
 
-    const user = new User(req.body);
+    const user = new User(body);
     await user.save();
 
     const { code, secret } = generateOTP(user._id);
