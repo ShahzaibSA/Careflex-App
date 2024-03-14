@@ -2,6 +2,8 @@
 
 require('dotenv').config();
 
+const { BadRequestException } = require('../exceptions');
+const Application = require('../models/application.model');
 const Shift = require('../models/shift.model');
 const shiftValidaiton = require('../validations/shift.validation');
 
@@ -31,7 +33,26 @@ const handleGetAllShifts = async function (req, res, next) {
   }
 };
 
+const handleApplyShift = async function (req, res, next) {
+  const user = req.user;
+  const shiftId = req.body.shiftId;
+  try {
+    const shiftAlreadyApplied = await Application.findOne({ shift: shiftId, user: user._id });
+    if (shiftAlreadyApplied) {
+      return next(new BadRequestException('You Already applied to this shift'));
+    }
+
+    const application = new Application({ shift: shiftId, user: user._id });
+    await application.save();
+
+    res.status(200).json({ ok: true, data: { application }, message: 'Successfully applied for this shift.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   handleCreateShift,
   handleGetAllShifts,
+  handleApplyShift,
 };
