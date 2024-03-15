@@ -51,8 +51,28 @@ const handleApplyShift = async function (req, res, next) {
   }
 };
 
+const handleGetShiftsApplicants = async function (req, res, next) {
+  try {
+    const data = await Application.find().sort({ createdAt: -1 }).populate('user shift');
+    if (!data.length) {
+      return res.status(200).json({ ok: false, message: 'No applicants found for this shift.' });
+    }
+
+    const applications = data.map((application) => {
+      return { user: application.user, shift: application.shift };
+    });
+
+    res
+      .status(200)
+      .json({ ok: true, data: { applications }, message: 'All shifts and applicants successfully fetched.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   handleCreateShift,
   handleGetAllShifts,
   handleApplyShift,
+  handleGetShiftsApplicants,
 };

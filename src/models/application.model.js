@@ -11,7 +11,12 @@ const applicationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Shift',
   },
-  // other application fields...
+  status: {
+    type: String,
+    required: true,
+    default: 'APPLIED',
+    enum: ['APPLIED', 'CANCELLED', 'REJECTED', 'APPROVED'],
+  },
 });
 
 const Application = mongoose.model('Application', applicationSchema);
