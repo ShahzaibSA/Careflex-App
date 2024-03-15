@@ -54,7 +54,7 @@ const handleApplyShift = async function (req, res, next) {
 
 const handleGetApplicantsByShiftId = async function (req, res, next) {
   const shiftId = req.params?.shiftId;
-  if (isValidObjectId(shiftId)) {
+  if (!isValidObjectId(shiftId)) {
     next(new BadRequestException('Please provide valid shift id.'));
   }
   if (!mongoose.Types.ObjectId.isValid(shiftId)) {
