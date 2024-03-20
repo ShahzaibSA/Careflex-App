@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 
 const applicationSchema = new mongoose.Schema({
-  user: {
+  applicant: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
@@ -11,7 +11,16 @@ const applicationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Shift',
   },
-  // other application fields...
+  shiftCreatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  status: {
+    type: String,
+    required: true,
+    default: 'APPLIED',
+    enum: ['APPLIED', 'CANCELLED', 'REJECTED', 'APPROVED'],
+  },
 });
 
 const Application = mongoose.model('Application', applicationSchema);

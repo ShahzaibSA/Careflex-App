@@ -13,7 +13,7 @@ const shiftSchema = new mongoose.Schema(
     postCode: { type: String, required: true },
     preference: { type: String, required: true, enum: ['Regular', 'Instant', 'As soon as possible'] },
     shiftListing: { type: String, required: true, enum: ['Default', 'Marketplace', 'Permanent'] },
-    uid: {
+    shiftCreatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },

@@ -16,9 +16,9 @@ router.post('/', isCareHomeUser, handleCreateShift);
 
 router.get('/', handleGetAllShifts);
 
-router.post('/apply', isCareGiverUser, handleApplyShift);
-
 router.get('/applicants/:shiftId', isCareHomeUser, handleGetApplicantsByShiftId);
+
+router.post('/apply', isCareGiverUser, handleApplyShift);
 
 // router.get('/applicants', isCareHomeUser, handleGetShiftsApplicants);
 
