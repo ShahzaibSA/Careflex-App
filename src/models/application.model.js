@@ -3,13 +3,17 @@
 const mongoose = require('mongoose');
 
 const applicationSchema = new mongoose.Schema({
-  user: {
+  applicant: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
   shift: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Shift',
+  },
+  shiftCreatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   },
   status: {
     type: String,

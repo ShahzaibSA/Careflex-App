@@ -2,18 +2,17 @@
 
 require('dotenv').config();
 
-const { default: mongoose, isValidObjectId } = require('mongoose');
 const { BadRequestException } = require('../exceptions');
 const Application = require('../models/application.model');
 const Shift = require('../models/shift.model');
-const shiftValidaiton = require('../validations/shift.validation');
+const { shiftSchema, applyShiftSchema, shiftIdSchema, userIdSchema } = require('../validations/shift.validation');
 
 //! Create Shift
 const handleCreateShift = async function (req, res, next) {
   try {
     const user = req.user;
-    const body = await shiftValidaiton.validateAsync(req.body);
-    const shift = await Shift.create({ ...body, uid: user._id });
+    const body = await shiftSchema.validateAsync(req.body);
+    const shift = await Shift.create({ ...body, shiftCreatedBy: user._id });
     delete shift._id;
     delete shift.__v;
     res.status(200).json({ ok: true, data: { shift }, message: 'Shift successfully created.' });
@@ -22,28 +21,38 @@ const handleCreateShift = async function (req, res, next) {
   }
 };
 
-//! Get All Shifts
+//! Get All Shifts for HOME
 const handleGetAllShifts = async function (req, res, next) {
+  let shifts;
   try {
-    const shifts = await Shift.find({ uid: req.user._id }).sort({ createdAt: -1 }).exec();
-    delete shifts?._id;
-    delete shifts?.__v;
+    const { shiftCreatedBy } = await userIdSchema.validateAsync(req.query);
+    if (shiftCreatedBy) {
+      shifts = await Shift.find({ shiftCreatedBy }).sort({ createdAt: -1 }).exec();
+    } else {
+      shifts = await Shift.find().sort({ createdAt: -1 }).exec();
+    }
     res.status(200).json({ ok: true, data: { shifts }, message: 'All Shifts successfully fetched.' });
   } catch (error) {
     next(error);
   }
 };
 
+//! Apply for Shift
 const handleApplyShift = async function (req, res, next) {
   const user = req.user;
-  const shiftId = req.body.shiftId;
   try {
-    const shiftAlreadyApplied = await Application.findOne({ shift: shiftId, user: user._id });
+    const { shiftId, shiftCreatedBy } = await applyShiftSchema.validateAsync(req.body);
+    const shift = await Shift.findOne({ _id: shiftId });
+    if (!shift) {
+      return next(new BadRequestException('Shift does not exist.'));
+    }
+
+    const shiftAlreadyApplied = await Application.findOne({ shift: shiftId, applicant: user._id });
     if (shiftAlreadyApplied) {
       return next(new BadRequestException('You Already applied to this shift'));
     }
 
-    const application = new Application({ shift: shiftId, user: user._id });
+    const application = new Application({ shift: shiftId, applicant: user._id, shiftCreatedBy });
     await application.save();
 
     res.status(200).json({ ok: true, data: { application }, message: 'Successfully applied for this shift.' });
@@ -52,22 +61,27 @@ const handleApplyShift = async function (req, res, next) {
   }
 };
 
+//! Get Applicant of the Shift
 const handleGetApplicantsByShiftId = async function (req, res, next) {
-  const shiftId = req.params?.shiftId;
-  if (!isValidObjectId(shiftId)) {
-    next(new BadRequestException('Please provide valid shift id.'));
-  }
-  if (!mongoose.Types.ObjectId.isValid(shiftId)) {
-    next(new BadRequestException('Please provide valid shift id'));
-  }
+  const shiftCreatedBy = req.user._id;
   try {
-    const applications = await Application.find({ shift: shiftId }).sort({ createdAt: -1 }).populate('user shift');
+    const { shiftId } = await shiftIdSchema.validateAsync(req.params);
+    const applications = await Application.find({ shiftCreatedBy, shift: shiftId })
+      .sort({ createdAt: -1 })
+      .populate('applicant shift');
+
     if (!applications.length) {
-      return res.status(200).json({ ok: false, message: 'No applicants found for this shift.' });
+      return next(new BadRequestException('No applicants found for this shift.'));
     }
-    const applicants = applications.map((application) => application.user);
+
     const shift = applications[0]?.shift;
-    res.status(200).json({ ok: true, data: { shift, applicants }, message: 'All Applicants successfully fetched.' });
+    const applicants = applications.map((application) => application.applicant);
+
+    res.status(200).json({
+      ok: true,
+      data: { shift, applicants },
+      message: 'All Applicants successfully fetched.',
+    });
   } catch (error) {
     next(error);
   }
