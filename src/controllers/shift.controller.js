@@ -10,8 +10,8 @@ const {
   applyShiftSchema,
   shiftIdSchema,
   userIdSchema,
-  applicantIdSchema,
   statusChangeSchema,
+  shiftApplicantSchema,
 } = require('../validations/shift.validation');
 
 //! Create Shift
@@ -68,65 +68,85 @@ const handleApplyShift = async function (req, res, next) {
   }
 };
 
-//! Get Applicant of the Shift
-const handleGetApplicantsByShiftId = async function (req, res, next) {
+//! Get Applications of the Shift
+const handleGetApplicationsByShiftId = async function (req, res, next) {
   const shiftCreatedBy = req.user._id;
   try {
-    const { shiftId } = await shiftIdSchema.validateAsync(req.params);
-    const applications = await Application.find({ shiftCreatedBy, shift: shiftId })
-      .sort({ createdAt: -1 })
-      .populate('applicant shift');
+    const { shiftId, status } = await shiftApplicantSchema.validateAsync(req.query);
+
+    let aggregate;
+    if (status) {
+      aggregate = { shiftCreatedBy, shift: shiftId, status };
+    } else {
+      aggregate = { shiftCreatedBy, shift: shiftId };
+    }
+
+    const applications = await Application.find(aggregate).sort({ createdAt: -1 }).populate('applicant shift');
 
     if (!applications.length) {
       return next(new BadRequestException('No applicants found for this shift.'));
     }
 
     const shift = applications[0]?.shift;
-    const applicants = applications.map((application) => application.applicant);
+
+    const applications2 = await Application.find(aggregate);
+
+    const applicants = applications.map((application, index) => {
+      if (String(applications2[index].applicant._id) === String(application.applicant._id)) {
+        return {
+          _id: application.applicant._id,
+          role: application.applicant.role,
+          username: application.applicant.username,
+          email: application.applicant.email,
+          status: applications2[index].status,
+          // createdAt: application.applicant.createdAt,
+          // updatedAt: application.applicant.updatedAt,
+        };
+      }
+    });
 
     res.status(200).json({
       ok: true,
-      data: { shift, applicants },
-      message: 'All Applicants successfully fetched.',
+      data: { shift, applications: applicants },
+      message: 'All applications successfully fetched.',
     });
   } catch (error) {
     next(error);
   }
 };
 
-//! Get Cancelled Shift
-const handleGetCancelledShift = async function (req, res, next) {
+const handleApplicationStatus = async function (req, res, next) {
   const shiftCreatedBy = req.user._id;
   try {
-    const { shiftId } = await shiftIdSchema.validateAsync(req.params);
-    const applications = await Application.find({ shiftCreatedBy, shift: shiftId, status: 'CANCELLED' })
-      .sort({ createdAt: -1 })
-      .populate('applicant shift');
+    const { applicantId, status, shiftId } = await statusChangeSchema.validateAsync(req.body);
+    const application = await Application.findOne({ shiftCreatedBy, shift: shiftId, applicant: applicantId });
 
-    if (!applications.length) {
-      return next(new BadRequestException('No cancelled application found for this shift.'));
+    if (!application) {
+      return next(new BadRequestException('No application found for  this shift.'));
+    }
+    if (application.status === status) {
+      return next(new BadRequestException(`You have already marked the application as '${status}'.`));
     }
 
-    const shift = applications[0]?.shift;
-    const applicants = applications.map((application) => application.applicant);
+    application.status = status;
+    await application.save();
 
     res.status(200).json({
       ok: true,
-      data: { shift, applicants },
-      message: 'All cancelled shift successfully fetched.',
+      data: { application },
+      message: 'Application status successfully changed.',
     });
   } catch (error) {
     next(error);
   }
 };
-
 
 module.exports = {
   handleCreateShift,
   handleGetAllShifts,
   handleApplyShift,
-  handleGetApplicantsByShiftId,
-  handleGetCancelledShift,
+  handleGetApplicationsByShiftId,
+  handleApplicationStatus,
   // handleGetShiftsApplicants,
 };
 

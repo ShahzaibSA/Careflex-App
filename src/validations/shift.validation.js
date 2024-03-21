@@ -42,4 +42,16 @@ const statusChangeSchema = Joi.object({
     .messages({ 'string.empty': 'Status is required field with valid status' }),
 });
 
-module.exports = { shiftSchema, applyShiftSchema, shiftIdSchema, userIdSchema, statusChangeSchema };
+const shiftApplicantSchema = Joi.object({
+  shiftId: Joi.string().required().min(24).max(24),
+  status: Joi.string().uppercase().valid('PENDING', 'CANCELLED', 'REJECTED', 'APPROVED'),
+});
+
+module.exports = {
+  shiftSchema,
+  applyShiftSchema,
+  shiftIdSchema,
+  userIdSchema,
+  statusChangeSchema,
+  shiftApplicantSchema,
+};
