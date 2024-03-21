@@ -7,16 +7,18 @@ const {
   handleGetAllShifts,
   handleApplyShift,
   handleGetApplicantsByShiftId,
-  // handleGetShiftsApplicants,
+  handleGetCancelledShift,
 } = require('../controllers/shift.controller');
 
 const router = express.Router();
 
-router.post('/', isCareHomeUser, handleCreateShift);
-
 router.get('/', handleGetAllShifts);
 
+router.post('/', isCareHomeUser, handleCreateShift);
+
 router.get('/applicants/:shiftId', isCareHomeUser, handleGetApplicantsByShiftId);
+
+router.get('/cancelled/:shiftId', isCareHomeUser, handleGetCancelledShift);
 
 router.post('/apply', isCareGiverUser, handleApplyShift);
 

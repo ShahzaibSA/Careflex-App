@@ -5,7 +5,14 @@ require('dotenv').config();
 const { BadRequestException } = require('../exceptions');
 const Application = require('../models/application.model');
 const Shift = require('../models/shift.model');
-const { shiftSchema, applyShiftSchema, shiftIdSchema, userIdSchema } = require('../validations/shift.validation');
+const {
+  shiftSchema,
+  applyShiftSchema,
+  shiftIdSchema,
+  userIdSchema,
+  applicantIdSchema,
+  statusChangeSchema,
+} = require('../validations/shift.validation');
 
 //! Create Shift
 const handleCreateShift = async function (req, res, next) {
@@ -87,6 +94,42 @@ const handleGetApplicantsByShiftId = async function (req, res, next) {
   }
 };
 
+//! Get Cancelled Shift
+const handleGetCancelledShift = async function (req, res, next) {
+  const shiftCreatedBy = req.user._id;
+  try {
+    const { shiftId } = await shiftIdSchema.validateAsync(req.params);
+    const applications = await Application.find({ shiftCreatedBy, shift: shiftId, status: 'CANCELLED' })
+      .sort({ createdAt: -1 })
+      .populate('applicant shift');
+
+    if (!applications.length) {
+      return next(new BadRequestException('No cancelled application found for this shift.'));
+    }
+
+    const shift = applications[0]?.shift;
+    const applicants = applications.map((application) => application.applicant);
+
+    res.status(200).json({
+      ok: true,
+      data: { shift, applicants },
+      message: 'All cancelled shift successfully fetched.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+module.exports = {
+  handleCreateShift,
+  handleGetAllShifts,
+  handleApplyShift,
+  handleGetApplicantsByShiftId,
+  handleGetCancelledShift,
+  // handleGetShiftsApplicants,
+};
+
 // const handleGetShiftsApplicants = async function (req, res, next) {
 //   try {
 //     const data = await Application.find({ user: req.user }).sort({ createdAt: -1 }).populate('user shift');
@@ -105,11 +148,3 @@ const handleGetApplicantsByShiftId = async function (req, res, next) {
 //     next(error);
 //   }
 // };
-
-module.exports = {
-  handleCreateShift,
-  handleGetAllShifts,
-  handleApplyShift,
-  handleGetApplicantsByShiftId,
-  // handleGetShiftsApplicants,
-};

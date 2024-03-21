@@ -32,4 +32,14 @@ const userIdSchema = Joi.object({
   shiftCreatedBy: Joi.string().min(24).max(24),
 });
 
-module.exports = { shiftSchema, applyShiftSchema, shiftIdSchema, userIdSchema };
+const statusChangeSchema = Joi.object({
+  applicantId: Joi.string().required().min(24).max(24),
+  shiftId: Joi.string().required().min(24).max(24),
+  status: Joi.string()
+    .uppercase()
+    .required()
+    .valid('REJECTED', 'APPROVED')
+    .messages({ 'string.empty': 'Status is required field with valid status' }),
+});
+
+module.exports = { shiftSchema, applyShiftSchema, shiftIdSchema, userIdSchema, statusChangeSchema };
