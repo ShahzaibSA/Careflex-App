@@ -8,13 +8,13 @@ const Shift = require('../models/shift.model');
 const {
   shiftSchema,
   applyShiftSchema,
-  shiftIdSchema,
   userIdSchema,
   statusChangeSchema,
   shiftApplicantSchema,
+  shiftIdSchema,
 } = require('../validations/shift.validation');
 
-//! Create Shift
+//! Create Shift >> HOME
 const handleCreateShift = async function (req, res, next) {
   try {
     const user = req.user;
@@ -22,53 +22,13 @@ const handleCreateShift = async function (req, res, next) {
     const shift = await Shift.create({ ...body, shiftCreatedBy: user._id });
     delete shift._id;
     delete shift.__v;
-    res.status(200).json({ ok: true, data: { shift }, message: 'Shift successfully created.' });
+    res.status(201).json({ ok: true, data: { shift }, message: 'Shift successfully created.' });
   } catch (error) {
     next(error);
   }
 };
 
-//! Get All Shifts for HOME
-const handleGetAllShifts = async function (req, res, next) {
-  let shifts;
-  try {
-    const { shiftCreatedBy } = await userIdSchema.validateAsync(req.query);
-    if (shiftCreatedBy) {
-      shifts = await Shift.find({ shiftCreatedBy }).sort({ createdAt: -1 }).exec();
-    } else {
-      shifts = await Shift.find().sort({ createdAt: -1 }).exec();
-    }
-    res.status(200).json({ ok: true, data: { shifts }, message: 'All Shifts successfully fetched.' });
-  } catch (error) {
-    next(error);
-  }
-};
-
-//! Apply for Shift
-const handleApplyShift = async function (req, res, next) {
-  const user = req.user;
-  try {
-    const { shiftId, shiftCreatedBy } = await applyShiftSchema.validateAsync(req.body);
-    const shift = await Shift.findOne({ _id: shiftId });
-    if (!shift) {
-      return next(new BadRequestException('Shift does not exist.'));
-    }
-
-    const shiftAlreadyApplied = await Application.findOne({ shift: shiftId, applicant: user._id });
-    if (shiftAlreadyApplied) {
-      return next(new BadRequestException('You Already applied to this shift'));
-    }
-
-    const application = new Application({ shift: shiftId, applicant: user._id, shiftCreatedBy });
-    await application.save();
-
-    res.status(200).json({ ok: true, data: { application }, message: 'Successfully applied for this shift.' });
-  } catch (error) {
-    next(error);
-  }
-};
-
-//! Get Applications of the Shift
+//! Get Applications of the Shift >> HOME
 const handleGetApplicationsByShiftId = async function (req, res, next) {
   const shiftCreatedBy = req.user._id;
   try {
@@ -115,6 +75,7 @@ const handleGetApplicationsByShiftId = async function (req, res, next) {
   }
 };
 
+//! Change Application Status >> HOME
 const handleApplicationStatus = async function (req, res, next) {
   const shiftCreatedBy = req.user._id;
   try {
@@ -141,12 +102,78 @@ const handleApplicationStatus = async function (req, res, next) {
   }
 };
 
+//* Apply for Shift >> GIVER
+const handleApplyShift = async function (req, res, next) {
+  const user = req.user;
+  try {
+    const { shiftId, shiftCreatedBy } = await applyShiftSchema.validateAsync(req.body);
+    const shift = await Shift.findOne({ _id: shiftId });
+    if (!shift) {
+      return next(new BadRequestException('Shift does not exist.'));
+    }
+
+    const shiftAlreadyApplied = await Application.findOne({ shift: shiftId, applicant: user._id });
+    if (shiftAlreadyApplied) {
+      return next(new BadRequestException('You Already applied to this shift'));
+    }
+
+    const application = new Application({ shift: shiftId, applicant: user._id, shiftCreatedBy });
+    await application.save();
+
+    res.status(200).json({ ok: true, data: { application }, message: 'Successfully applied for this shift.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//* Shift Completion >> GIVER
+const handleShiftCompletion = async function (req, res, next) {
+  try {
+    const { shiftId } = await shiftIdSchema.validateAsync(req.query);
+    const shift = await Application.findOne({ shift: shiftId, applicant: req.user._id });
+    if (!shift) {
+      return next(new BadRequestException('This shift is not assigned to you.'));
+    }
+    if (shift.status === 'REJECTED') {
+      return next(new BadRequestException('Shift is rejected.'));
+    }
+    if (shift.status === 'CANCELLED') {
+      return next(new BadRequestException('Shift is cancelled.'));
+    }
+    if (shift.status !== 'APPROVED') {
+      return next(new BadRequestException('Shift is not approved.'));
+    }
+    shift.shiftCompleted = true;
+    await shift.save();
+    res.status(200).json({ ok: true, data: { shift }, message: 'Shift successfully completed.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//< Get All Shifts >> HOME & GIVER
+const handleGetAllShifts = async function (req, res, next) {
+  let shifts;
+  try {
+    const { shiftCreatedBy } = await userIdSchema.validateAsync(req.query);
+    if (shiftCreatedBy) {
+      shifts = await Shift.find({ shiftCreatedBy }).sort({ createdAt: -1 }).exec();
+    } else {
+      shifts = await Shift.find().sort({ createdAt: -1 }).exec();
+    }
+    res.status(200).json({ ok: true, data: { shifts }, message: 'All Shifts successfully fetched.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   handleCreateShift,
   handleGetAllShifts,
   handleApplyShift,
   handleGetApplicationsByShiftId,
   handleApplicationStatus,
+  handleShiftCompletion,
   // handleGetShiftsApplicants,
 };
 
