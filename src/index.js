@@ -11,6 +11,7 @@ const swaggerFile = require('../swagger-output.json');
 const connectDB = require('./db');
 const userRoutes = require('./routes/user.routes.js');
 const shiftRoutes = require('./routes/shift.routes.js');
+const timesheetRoutes = require('./routes/timesheet.routes.js');
 const job = require('./jobs/deleteUnverifiedUsers.js');
 const authenticate = require('./middlewares/auth.js');
 const errorMiddleware = require('./middlewares/error.middleware.js');
@@ -41,11 +42,14 @@ app.use((req, res, next) => {
 //! Swagger Api Documentation
 app.use('/api/v1/doc/', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
-//! API ROUTES
+//! USER ROUTES
 app.use('/v1/users', userRoutes);
 
-//! API ROUTES
+//! SHIFT ROUTES
 app.use('/v1/shift', authenticate, shiftRoutes);
+
+//! TIMESHEET ROUTES
+app.use('/v1/timesheet', authenticate, timesheetRoutes);
 
 //! Error Middleware
 app.use(errorMiddleware);

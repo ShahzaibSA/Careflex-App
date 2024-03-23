@@ -5,6 +5,7 @@ require('dotenv').config();
 const { BadRequestException } = require('../exceptions');
 const Application = require('../models/application.model');
 const Shift = require('../models/shift.model');
+const Timesheet = require('../models/timesheet.model');
 const {
   shiftSchema,
   applyShiftSchema,
@@ -144,6 +145,9 @@ const handleShiftCompletion = async function (req, res, next) {
       return next(new BadRequestException('Shift is not approved.'));
     }
     shift.shiftCompleted = true;
+    const unsubmittedTimesheet = Timesheet({ applicantId: req.user._id, shiftId: shiftId, submitted: false });
+    delete unsubmittedTimesheet.status;
+    await unsubmittedTimesheet.save();
     await shift.save();
     res.status(200).json({ ok: true, data: { shift }, message: 'Shift successfully completed.' });
   } catch (error) {
