@@ -81,10 +81,12 @@ const handleApplicationStatus = async function (req, res, next) {
   const shiftCreatedBy = req.user._id;
   try {
     const { applicantId, status, shiftId } = await statusChangeSchema.validateAsync(req.body);
-    const application = await Application.findOne({ shiftCreatedBy, shift: shiftId, applicant: applicantId });
-
+    const application = await Application.findOne({ shift: shiftId, applicant: applicantId });
     if (!application) {
       return next(new BadRequestException('No application found for  this shift.'));
+    }
+    if (String(application.shiftCreatedBy) !== String(shiftCreatedBy)) {
+      return next(new BadRequestException('You are not authorized to change the status of this application.'));
     }
     if (application.status === status) {
       return next(new BadRequestException(`You have already marked the application as '${status}'.`));

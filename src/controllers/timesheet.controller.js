@@ -31,7 +31,7 @@ const handleGetUnsubmittedTimesheets = async function (req, res, next) {
 
 const handleSubmitTimesheet = async function (req, res, next) {
   try {
-    const { shiftId } = await shiftIdSchema.validateAsync(req.query);
+    const { shiftId } = await shiftIdSchema.validateAsync(req.body);
     const timesheet = await Timesheet.findOne({ applicantId: req.user._id, shiftId });
     console.log(timesheet);
     if (!timesheet) {
