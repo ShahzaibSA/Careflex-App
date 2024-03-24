@@ -14,6 +14,11 @@ const timesheetSchema = new mongoose.Schema(
       ref: 'Shift',
       required: true,
     },
+    shiftCreatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     status: {
       type: String,
       enum: ['PENDING', 'APPROVED', 'REJECTED'],

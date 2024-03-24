@@ -12,7 +12,7 @@ const {
   userIdSchema,
   statusChangeSchema,
   shiftApplicantSchema,
-  shiftIdSchema,
+  shiftCompletionSchema,
 } = require('../validations/shift.validation');
 
 //! Create Shift >> HOME
@@ -130,9 +130,10 @@ const handleApplyShift = async function (req, res, next) {
 //* Shift Completion >> GIVER
 const handleShiftCompletion = async function (req, res, next) {
   try {
-    const { shiftId } = await shiftIdSchema.validateAsync(req.query);
+    const { shiftId, shiftCreatedBy } = await shiftCompletionSchema.validateAsync(req.body);
     const shift = await Application.findOne({ shift: shiftId, applicant: req.user._id });
-    if (!shift) {
+
+    if (!shift || String(shift.applicant) !== String(req.user._id)) {
       return next(new BadRequestException('This shift is not assigned to you.'));
     }
     if (shift.status === 'REJECTED') {
@@ -144,8 +145,16 @@ const handleShiftCompletion = async function (req, res, next) {
     if (shift.status !== 'APPROVED') {
       return next(new BadRequestException('Shift is not approved.'));
     }
+    if (shift.shiftCompleted) {
+      return next(new BadRequestException('Shift is already completed.'));
+    }
     shift.shiftCompleted = true;
-    const unsubmittedTimesheet = Timesheet({ applicantId: req.user._id, shiftId: shiftId, submitted: false });
+    const unsubmittedTimesheet = new Timesheet({
+      applicantId: req.user._id,
+      shiftId,
+      shiftCreatedBy,
+      submitted: false,
+    });
     delete unsubmittedTimesheet.status;
     await unsubmittedTimesheet.save();
     await shift.save();
@@ -165,7 +174,7 @@ const handleGetAllShifts = async function (req, res, next) {
     } else {
       shifts = await Shift.find().sort({ createdAt: -1 }).exec();
     }
-    res.status(200).json({ ok: true, data: { shifts }, message: 'All Shifts successfully fetched.' });
+    res.status(200).json({ ok: true, data: { shifts }, message: 'All shifts successfully fetched.' });
   } catch (error) {
     next(error);
   }

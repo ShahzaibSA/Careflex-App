@@ -24,8 +24,9 @@ const applyShiftSchema = Joi.object({
   shiftCreatedBy: Joi.string().min(24).max(24),
 });
 
-const shiftIdSchema = Joi.object({
+const shiftCompletionSchema = Joi.object({
   shiftId: Joi.string().required().min(24).max(24),
+  shiftCreatedBy: Joi.string().required().min(24).max(24),
 });
 
 const userIdSchema = Joi.object({
@@ -50,7 +51,7 @@ const shiftApplicantSchema = Joi.object({
 module.exports = {
   shiftSchema,
   applyShiftSchema,
-  shiftIdSchema,
+  shiftCompletionSchema,
   userIdSchema,
   statusChangeSchema,
   shiftApplicantSchema,
