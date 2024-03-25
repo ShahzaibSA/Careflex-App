@@ -169,10 +169,10 @@ const handleShiftCompletion = async function (req, res, next) {
 //< Get All Shifts >> HOME & GIVER
 const handleGetAllShifts = async function (req, res, next) {
   let shifts;
+  const user = req.user;
   try {
-    const { shiftCreatedBy } = await userIdSchema.validateAsync(req.query);
-    if (shiftCreatedBy) {
-      shifts = await Shift.find({ shiftCreatedBy }).sort({ createdAt: -1 }).exec();
+    if (user.role === 'HOME') {
+      shifts = await Shift.find({ shiftCreatedBy: user._id }).sort({ createdAt: -1 }).exec();
     } else {
       shifts = await Shift.find().sort({ createdAt: -1 }).exec();
     }
@@ -181,7 +181,6 @@ const handleGetAllShifts = async function (req, res, next) {
     next(error);
   }
 };
-
 module.exports = {
   handleCreateShift,
   handleGetAllShifts,
