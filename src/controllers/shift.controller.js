@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 
-const { BadRequestException } = require('../exceptions');
+const { BadRequestException, ForbiddenExpception } = require('../exceptions');
 const Application = require('../models/application.model');
 const Shift = require('../models/shift.model');
 const Timesheet = require('../models/timesheet.model');
@@ -86,7 +86,7 @@ const handleApplicationStatus = async function (req, res, next) {
       return next(new BadRequestException('No application found for  this shift.'));
     }
     if (String(application.shiftCreatedBy) !== String(shiftCreatedBy)) {
-      return next(new BadRequestException('You are not authorized to change the status of this application.'));
+      return next(new ForbiddenExpception('You are not authorized to change the status of this application.'));
     }
     if (application.status === status) {
       return next(new BadRequestException(`You have already marked the application as '${status}'.`));
@@ -136,7 +136,7 @@ const handleShiftCompletion = async function (req, res, next) {
     const shift = await Application.findOne({ shift: shiftId, applicant: req.user._id });
 
     if (!shift || String(shift.applicant) !== String(req.user._id)) {
-      return next(new BadRequestException('This shift is not assigned to you.'));
+      return next(new ForbiddenExpception('This shift is not assigned to you.'));
     }
     if (shift.status === 'REJECTED') {
       return next(new BadRequestException('Shift is rejected.'));

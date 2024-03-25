@@ -12,7 +12,14 @@ class NotFoundException extends HttpException {
   }
 }
 
+class ForbiddenExpception extends HttpException {
+  constructor(message) {
+    super(HttpStatus.NotFound, message);
+  }
+}
+
 module.exports = {
   BadRequestException,
   NotFoundException,
+  ForbiddenExpception,
 };
