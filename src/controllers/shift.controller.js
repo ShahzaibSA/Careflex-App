@@ -141,13 +141,13 @@ const handleShiftCompletion = async function (req, res, next) {
       return next(new ForbiddenExpception('This shift is not assigned to you.'));
     }
     if (shift.status === 'REJECTED') {
-      return next(new BadRequestException('Shift is rejected.'));
+      return next(new BadRequestException('Shift application is rejected.'));
     }
     if (shift.status === 'CANCELLED') {
-      return next(new BadRequestException('Shift is cancelled.'));
+      return next(new BadRequestException('Shift application is cancelled.'));
     }
     if (shift.status !== 'APPROVED') {
-      return next(new BadRequestException('Shift is not approved.'));
+      return next(new BadRequestException('Shift application is not approved.'));
     }
     if (shift.shiftCompleted) {
       return next(new BadRequestException('Shift is already completed.'));
