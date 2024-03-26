@@ -2,7 +2,7 @@
 
 const { BadRequestException } = require('../exceptions');
 const Timesheet = require('../models/timesheet.model');
-const { shiftIdSchema, timesheetStatus } = require('../validations/timesheet.validation');
+const { shiftIdSchema, timesheetStatus, timesheetStatusSchema } = require('../validations/timesheet.validation');
 
 //! Get Submitted Timesheets >> HOME
 const handleGetSubmittedTimesheets = async function (req, res, next) {
@@ -19,6 +19,26 @@ const handleGetSubmittedTimesheets = async function (req, res, next) {
       return next(new BadRequestException('No submitted timesheets found.'));
     }
     res.status(200).json({ ok: true, data: { timesheet }, message: 'Timesheet successfully fetched.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//! Approve or Reject Submitted Timesheets >> HOME
+const handleApproveOrRejectSubmittedTimesheet = async function (req, res, next) {
+  try {
+    const shiftCreatedBy = req.user._id;
+    const { status, applicantId, shiftId } = await timesheetStatusSchema.validateAsync(req.body);
+    const timesheet = await Timesheet.findOne({ shiftCreatedBy, applicant: applicantId, shift: shiftId });
+    if (!timesheet) {
+      return next(new BadRequestException('Timesheet not found.'));
+    }
+    if (timesheet.status === status) {
+      return next(new BadRequestException(`Timesheet already ${status}`));
+    }
+    timesheet.status = status;
+    await timesheet.save();
+    res.status(200).json({ ok: true, data: { timesheet }, message: `Timesheet ${status}` });
   } catch (error) {
     next(error);
   }
@@ -58,4 +78,9 @@ const handleSubmitTimesheet = async function (req, res, next) {
   }
 };
 
-module.exports = { handleGetSubmittedTimesheets, handleSubmitTimesheet, handleGetUnsubmittedTimesheets };
+module.exports = {
+  handleGetSubmittedTimesheets,
+  handleSubmitTimesheet,
+  handleGetUnsubmittedTimesheets,
+  handleApproveOrRejectSubmittedTimesheet,
+};

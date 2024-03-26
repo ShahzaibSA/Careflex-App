@@ -7,6 +7,7 @@ const {
   handleSubmitTimesheet,
   handleGetUnsubmittedTimesheets,
   handleGetSubmittedTimesheets,
+  handleApproveOrRejectSubmittedTimesheet,
 } = require('../controllers/timesheet.controller');
 const isCareGiverUser = require('../middlewares/isCareGiverUser');
 const isCareHomeUser = require('../middlewares/isCareHomeUser');
@@ -14,10 +15,13 @@ const isCareHomeUser = require('../middlewares/isCareHomeUser');
 //! Get Submitted Timesheets >> HOME
 router.get('/submitted', isCareHomeUser, handleGetSubmittedTimesheets);
 
-//! Get Unsubmitted Timesheets >> GIVER
+//! Approve or Reject Submitted Timesheets >> HOME
+router.post('/status', isCareHomeUser, handleApproveOrRejectSubmittedTimesheet);
+
+//* Get Unsubmitted Timesheets >> GIVER
 router.get('/unsubmitted', isCareGiverUser, handleGetUnsubmittedTimesheets);
 
-//! Create Timesheet >> GIVER
+//* Create Timesheet >> GIVER
 router.post('/submit', isCareGiverUser, handleSubmitTimesheet);
 
 module.exports = router;
