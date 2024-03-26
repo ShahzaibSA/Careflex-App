@@ -14,7 +14,7 @@ const handleGetSubmittedTimesheets = async function (req, res, next) {
     } else {
       aggregate = { shiftCreatedBy: req.user._id, submitted: true };
     }
-    const timesheet = await Timesheet.find(aggregate).sort({ createdAt: -1 }).populate('shiftId');
+    const timesheet = await Timesheet.find(aggregate).sort({ createdAt: -1 }).populate('shift');
     if (!timesheet.length) {
       return next(new BadRequestException('No submitted timesheets found.'));
     }
@@ -27,7 +27,9 @@ const handleGetSubmittedTimesheets = async function (req, res, next) {
 //! Get Unsubmitted Timesheets >> GIVER
 const handleGetUnsubmittedTimesheets = async function (req, res, next) {
   try {
-    const timesheet = await Timesheet.find({ applicantId: req.user._id, submitted: false }).populate('shiftId');
+    const timesheet = await Timesheet.find({ applicant: req.user._id, submitted: false })
+      .sort({ createdAt: -1 })
+      .populate('shift');
     if (!timesheet.length) {
       return next(new BadRequestException('No unsubmitted timesheets found.'));
     }
@@ -41,7 +43,7 @@ const handleGetUnsubmittedTimesheets = async function (req, res, next) {
 const handleSubmitTimesheet = async function (req, res, next) {
   try {
     const { shiftId } = await shiftIdSchema.validateAsync(req.body);
-    const timesheet = await Timesheet.findOne({ applicantId: req.user._id, shiftId });
+    const timesheet = await Timesheet.findOne({ applicant: req.user._id, shift: shiftId });
     if (!timesheet) {
       return next(new BadRequestException('Timesheet not found.'));
     }

@@ -4,12 +4,12 @@ const mongoose = require('mongoose');
 
 const timesheetSchema = new mongoose.Schema(
   {
-    applicantId: {
+    applicant: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    shiftId: {
+    shift: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Shift',
       required: true,

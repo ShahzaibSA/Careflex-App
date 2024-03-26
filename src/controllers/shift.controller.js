@@ -9,7 +9,6 @@ const Timesheet = require('../models/timesheet.model');
 const {
   shiftSchema,
   applyShiftSchema,
-  userIdSchema,
   statusChangeSchema,
   shiftApplicantSchema,
   shiftCompletionSchema,
@@ -152,8 +151,8 @@ const handleShiftCompletion = async function (req, res, next) {
     }
     shift.shiftCompleted = true;
     const unsubmittedTimesheet = new Timesheet({
-      applicantId: req.user._id,
-      shiftId,
+      applicant: req.user._id,
+      shift,
       shiftCreatedBy,
       submitted: false,
     });
