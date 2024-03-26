@@ -36,15 +36,18 @@ const handleGetApplicationsByShiftId = async function (req, res, next) {
 
     let aggregate;
     if (status) {
-      aggregate = { shiftCreatedBy, shift: shiftId, status };
+      aggregate = { shift: shiftId, status };
     } else {
-      aggregate = { shiftCreatedBy, shift: shiftId };
+      aggregate = { shift: shiftId };
     }
 
     const applications = await Application.find(aggregate).sort({ createdAt: -1 }).populate('applicant shift');
 
     if (!applications.length) {
       return next(new BadRequestException('No applicants found for this shift.'));
+    }
+    if (String(applications[0].shift.shiftCreatedBy) !== String(shiftCreatedBy)) {
+      return next(new ForbiddenExpception('You are not authorized to view the applicants of this shift.'));
     }
 
     const shift = applications[0]?.shift;
