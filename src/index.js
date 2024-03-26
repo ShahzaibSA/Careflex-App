@@ -57,7 +57,7 @@ app.use(errorMiddleware);
 //! DATABASE CONNECTION
 connectDB();
 
-// error handler
+//! Error Handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
