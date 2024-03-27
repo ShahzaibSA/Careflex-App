@@ -15,6 +15,9 @@ const handleGetWorkers = async function (req, res, next) {
     const todayUTC = today.toISOString().split('T')[0];
     const tomorrowUTC = tomorrow.toISOString().split('T')[0];
 
+    console.log('Today UTC', todayUTC);
+    console.log('Tomorrow UTC', tomorrowUTC);
+
     const workers = await Worker.find({
       shiftDate: {
         $gte: todayUTC,
