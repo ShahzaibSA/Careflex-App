@@ -10,19 +10,10 @@ const handleGetWorkers = async function (req, res, next) {
 
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-
-    // Convert dates to UTC strings for comparison
-    const todayUTC = today.toISOString().split('T')[0];
-    const tomorrowUTC = tomorrow.toISOString().split('T')[0];
-
-    console.log('Today UTC', todayUTC);
-    console.log('Tomorrow UTC', tomorrowUTC);
-
+    console.log('TODAY', today);
+    console.log('TOMORROW', tomorrow);
     const workers = await Worker.find({
-      shiftDate: {
-        $gte: todayUTC,
-        $lt: tomorrowUTC,
-      },
+      shiftDate: { $gte: today, $lt: tomorrow },
     }).populate('applicant');
 
     console.log(workers);
