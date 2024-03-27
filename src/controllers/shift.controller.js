@@ -20,7 +20,7 @@ const handleCreateShift = async function (req, res, next) {
   try {
     const user = req.user;
     const body = await shiftSchema.validateAsync(req.body);
-    const shift = await Shift.create({ ...body, shiftCreatedBy: user._id });
+    const shift = await Shift.create({ ...body, date: body.date.toUTCString(), shiftCreatedBy: user._id });
     delete shift._id;
     delete shift.__v;
     res.status(201).json({ ok: true, data: { shift }, message: 'Shift successfully created.' });
