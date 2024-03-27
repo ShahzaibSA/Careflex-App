@@ -15,6 +15,9 @@ const handleGetWorkers = async function (req, res, next) {
       shiftDate: { $gte: today, $lt: tomorrow },
     }).populate('applicant');
 
+    console.log(workers);
+    console.log(String(workers[0]?.shiftCreatedBy), String(req.user._id))
+    console.log(String(workers[0]?.shiftCreatedBy) !== String(req.user._id))
     if (String(workers[0]?.shiftCreatedBy) !== String(req.user._id)) {
       return next(new ForbiddenExpception('You are not authorized to view the workers of this shift.'));
     }
