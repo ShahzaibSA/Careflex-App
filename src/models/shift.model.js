@@ -5,7 +5,8 @@ const shiftSchema = new mongoose.Schema(
   {
     where: { type: String, required: true },
     who: { type: String, required: true },
-    when: { type: String, required: true },
+    date: { type: Date, required: true },
+    time: { type: String, required: true },
     skills: { type: String, required: true },
     shift: { type: String, required: true },
     contactNo: { type: String, required: true },

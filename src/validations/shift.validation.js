@@ -3,7 +3,8 @@ const Joi = require('joi');
 const shiftSchema = Joi.object({
   where: Joi.string().required().messages({ 'string.empty': 'Where is a required field' }),
   who: Joi.string().required().messages({ 'string.empty': 'Who is a required field' }),
-  when: Joi.string().required().messages({ 'string.empty': 'When is a required field' }),
+  date: Joi.date().required().messages({ 'string.empty': 'Date is a required field' }),
+  time: Joi.string().required().messages({ 'string.empty': 'Time is a required field' }),
   skills: Joi.string().required().messages({ 'string.empty': 'Skills is a required field' }),
   shift: Joi.string().required().messages({ 'string.empty': 'Shift is a required field' }),
   contactNo: Joi.string().required().messages({ 'string.empty': 'Contact No. is a required field' }),

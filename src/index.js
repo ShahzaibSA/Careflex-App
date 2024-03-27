@@ -12,6 +12,7 @@ const connectDB = require('./db');
 const userRoutes = require('./routes/user.routes.js');
 const shiftRoutes = require('./routes/shift.routes.js');
 const timesheetRoutes = require('./routes/timesheet.routes.js');
+const workerRoutes = require('./routes/worker.routes.js');
 const job = require('./jobs/deleteUnverifiedUsers.js');
 const authenticate = require('./middlewares/auth.js');
 const errorMiddleware = require('./middlewares/error.middleware.js');
@@ -50,6 +51,9 @@ app.use('/v1/shift', authenticate, shiftRoutes);
 
 //! TIMESHEET ROUTES
 app.use('/v1/timesheet', authenticate, timesheetRoutes);
+
+//! WORKER ROUTES
+app.use('/v1/worker', authenticate, workerRoutes);
 
 //! Error Middleware
 app.use(errorMiddleware);

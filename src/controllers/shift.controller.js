@@ -6,6 +6,7 @@ const { BadRequestException, ForbiddenExpception } = require('../exceptions');
 const Application = require('../models/application.model');
 const Shift = require('../models/shift.model');
 const Timesheet = require('../models/timesheet.model');
+const Worker = require('../models/worker.model');
 const {
   shiftSchema,
   applyShiftSchema,
@@ -83,7 +84,7 @@ const handleApplicationStatus = async function (req, res, next) {
   const shiftCreatedBy = req.user._id;
   try {
     const { applicantId, status, shiftId } = await statusChangeSchema.validateAsync(req.body);
-    const application = await Application.findOne({ shift: shiftId, applicant: applicantId });
+    const application = await Application.findOne({ shift: shiftId, applicant: applicantId }).populate('shift');
     if (!application) {
       return next(new BadRequestException('No application found for  this shift.'));
     }
@@ -92,6 +93,15 @@ const handleApplicationStatus = async function (req, res, next) {
     }
     if (application.status === status) {
       return next(new BadRequestException(`You have already marked the application as '${status}'.`));
+    }
+
+    if (status === 'APPROVED') {
+      await Worker.create({
+        applicant: applicantId,
+        shift: shiftId,
+        shiftCreatedBy,
+        shiftDate: application.shift.date,
+      });
     }
 
     application.status = status;
