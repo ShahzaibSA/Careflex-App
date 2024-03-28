@@ -10,15 +10,11 @@ const handleGetWorkers = async function (req, res, next) {
 
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    console.log('TODAY', today);
-    console.log('TOMORROW', tomorrow);
+    
     const workers = await Worker.find({
       shiftDate: { $gte: today, $lt: tomorrow },
     }).populate('applicant');
 
-    console.log(workers);
-    console.log(String(workers[0]?.shiftCreatedBy), String(req.user._id));
-    console.log(String(workers[0]?.shiftCreatedBy) !== String(req.user._id));
     if (String(workers[0]?.shiftCreatedBy) !== String(req.user._id)) {
       return next(new ForbiddenExpception('You are not authorized to view the workers of this shift.'));
     }
