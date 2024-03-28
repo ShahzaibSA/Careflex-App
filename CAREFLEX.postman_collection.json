@@ -1,501 +1,1417 @@
 {
-  "info": {
-    "_postman_id": "2e81eaf4-3f30-4678-97c7-08d69da598e3",
-    "name": "CAREFLEX",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "17281220"
-  },
-  "item": [
-    {
-      "name": "Auth",
-      "item": [
-        {
-          "name": "Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var res = pm.response.json();\r",
-                  "if(res.error) return\r",
-                  "console.log(res)\r",
-                  "pm.environment.set('token', res.token);"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"email\":\"shahzaibphones@gmail.com\",\r\n    \"password\":\"Test@123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users/login",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", "login"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Forgot Password",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [""],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"email\":\"shahzaibsaa1@gmail.com\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users/forgot-password",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", "forgot-password"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Reset Password",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [""],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"password\": \"Test@12345\",\r\n    \"code\": \"065083\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users/reset-password",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", "reset-password"]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Users",
-      "item": [
-        {
-          "name": "Get Uer",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/v1/users/",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", ""]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "DELETE",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"password\": \"Test@123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users/",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", ""]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Sign up",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [""],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"role\": \"HOME\",\r\n    \"username\":\"Shahzaib Ahmed\",\r\n    \"email\":\"shahzaibphones@gmail.com\",\r\n    \"password\":\"Test@123\",\r\n    \"confirmPassword\":\"Test@123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users",
-              "host": ["{{url}}"],
-              "path": ["v1", "users"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Email Verification",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var res = pm.response.json();\r",
-                  "if(res.error) return;\r",
-                  "pm.environment.set('token', res.token);"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"code\": 518249             \r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users/verification",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", "verification"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Logout",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users/logout",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", "logout"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Logout All",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users/logout-all",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", "logout-all"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Email Update Otp",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"email\": \"shahzaibsaa1@gmail.com\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users/email-update-otp",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", "email-update-otp"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Email Update",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"email\": \"shahzaibsaa1@gmail.com\",\r\n     \"code\": \"905562\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users/email-update",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", "email-update"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"username\": \"Shahzaib Ahmed Changed\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users/",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", ""]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update Password",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"currentPassword\": \"Test@12345\",\r\n    \"newPassword\": \"Test@123\",\r\n    \"confirmPassword\": \"Test@123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users/update-password",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", "update-password"]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Admin",
-      "item": [
-        {
-          "name": "All Users",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/v1/admin/users/?role=HOME",
-              "host": ["{{url}}"],
-              "path": ["v1", "admin", "users", ""],
-              "query": [
-                {
-                  "key": "role",
-                  "value": "HOME"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Admin Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var res = pm.response.json();\r",
-                  "if(res.error) return\r",
-                  "console.log(res)\r",
-                  "pm.environment.set('token', res.token);"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"email\":\"careflex.app@gmail.com\",\r\n    \"password\":\"Admin@123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/v1/users/login",
-              "host": ["{{url}}"],
-              "path": ["v1", "users", "login"]
-            }
-          },
-          "response": []
-        }
-      ]
-    }
-  ]
+	"info": {
+		"_postman_id": "2e81eaf4-3f30-4678-97c7-08d69da598e3",
+		"name": "CAREFLEX",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17281220"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var res = pm.response.json();\r",
+									"if(res.error) return\r",
+									"console.log(res)\r",
+									"pm.environment.set('token', res.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"email\": \"shahzaibsaa1@gmail.com\"\r\n   \"password\": \"Test@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/users/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Error Login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"shahzaibphones@gmail.com\",\r\n    \"password\":\"Test@123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/users/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										"login"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "access-control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "access-control-allow-methods",
+									"value": "GET, POST, PUT, PATCH DELETE"
+								},
+								{
+									"key": "access-control-allow-headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "58"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"3a-p97ofcaMnBrTm4ndvEV5fa3ehIs\""
+								},
+								{
+									"key": "date",
+									"value": "Sun, 10 Mar 2024 00:16:46 GMT"
+								},
+								{
+									"key": "server",
+									"value": "railway"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": false,\n    \"message\": \"No Account Found. Please Sign Up!\"\n}"
+						},
+						{
+							"name": "Invalid Login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"shahzaibsaa1@gmail.com\",\r\n    \"password\":\"Test@12s3\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/users/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										"login"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "access-control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "access-control-allow-methods",
+									"value": "GET, POST, PUT, PATCH DELETE"
+								},
+								{
+									"key": "access-control-allow-headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "50"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"32-Zy+Ep3o0AVygnHTna63vQgpwyKQ\""
+								},
+								{
+									"key": "date",
+									"value": "Sun, 10 Mar 2024 00:19:30 GMT"
+								},
+								{
+									"key": "server",
+									"value": "railway"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": false,\n    \"message\": \"Invalid Email or Password\"\n}"
+						},
+						{
+							"name": "Success Login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"shahzaibsaa1@gmail.com\",\r\n    \"password\":\"Test@123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/users/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "access-control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "access-control-allow-methods",
+									"value": "GET, POST, PUT, PATCH DELETE"
+								},
+								{
+									"key": "access-control-allow-headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "389"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"185-gvltFvSBRmqMbSaj0FVJNS3VRIg\""
+								},
+								{
+									"key": "date",
+									"value": "Sun, 10 Mar 2024 00:19:57 GMT"
+								},
+								{
+									"key": "server",
+									"value": "railway"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": true,\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NWVjZmMxZjQ0OGFmODIxMWE3ZmVlMjUiLCJpYXQiOjE3MTAwMjk5OTcsImV4cCI6MTcxMDYzNDc5N30._OSFRh8QnUlLrsg7_6PzsAZNgIjfpHbWlN7zmsHved8\",\n    \"user\": {\n        \"_id\": \"65ecfc1f448af8211a7fee25\",\n        \"role\": \"HOME\",\n        \"username\": \"shahzaib ahmed\",\n        \"email\": \"shahzaibsaa1@gmail.com\",\n        \"createdAt\": \"2024-03-10T00:17:35.991Z\",\n        \"updatedAt\": \"2024-03-10T00:19:57.377Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Forgot Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"shahzaibphones@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/users/forgot-password",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"Test@12345\",\r\n    \"code\": 962333 \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/users/reset-password",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get Uer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/v1/users/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"Test@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/users/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign up",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"role\": \"GIVER\",\r\n    \"username\":\"Shahzaib Ahmed\",\r\n    \"email\":\"shahzaibsaa1@gmail.com\",\r\n    \"password\":\"Test@123\",\r\n    \"confirmPassword\":\"Test@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success Sign up",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"role\": \"HOME\",\r\n    \"username\":\"Shahzaib Ahmed\",\r\n    \"email\":\"shahzaibsaa1@gmail.com\",\r\n    \"password\":\"Test@123\",\r\n    \"confirmPassword\":\"Test@123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/users",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"users"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "access-control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "access-control-allow-methods",
+									"value": "GET, POST, PUT, PATCH DELETE"
+								},
+								{
+									"key": "access-control-allow-headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "101"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"65-m4lsk+HiJ5UQEHxZZ2qZpCJX1Is\""
+								},
+								{
+									"key": "date",
+									"value": "Sun, 10 Mar 2024 00:17:36 GMT"
+								},
+								{
+									"key": "server",
+									"value": "railway"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": true,\n    \"message\": \"A verification OTP is sent to shahzaibsaa1@gmail.com. Please verify your OTP.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Email Verification",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var res = pm.response.json();\r",
+									"if(res.error) return;\r",
+									"pm.environment.set('token', res.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\": 518249             \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/users/verification",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"verification"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Error Email Verification",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": 578539              \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/users/verification",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										"verification"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "access-control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "access-control-allow-methods",
+									"value": "GET, POST, PUT, PATCH DELETE"
+								},
+								{
+									"key": "access-control-allow-headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "50"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"32-erfBR4Yu9jGL/A/J/vRZNlUXk5I\""
+								},
+								{
+									"key": "date",
+									"value": "Sun, 10 Mar 2024 00:18:12 GMT"
+								},
+								{
+									"key": "server",
+									"value": "railway"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": false,\n    \"message\": \"Please enter a valid OTP.\"\n}"
+						},
+						{
+							"name": "Success Email Verification",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": 578538               \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/users/verification",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"users",
+										"verification"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "x-powered-by",
+									"value": "Express"
+								},
+								{
+									"key": "access-control-allow-origin",
+									"value": "*"
+								},
+								{
+									"key": "access-control-allow-methods",
+									"value": "GET, POST, PUT, PATCH DELETE"
+								},
+								{
+									"key": "access-control-allow-headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "content-length",
+									"value": "430"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"1ae-Q6keHuf59TI/wkibeWYPqRR/ISY\""
+								},
+								{
+									"key": "date",
+									"value": "Sun, 10 Mar 2024 00:18:37 GMT"
+								},
+								{
+									"key": "server",
+									"value": "railway"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": true,\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NWVjZmMxZjQ0OGFmODIxMWE3ZmVlMjUiLCJpYXQiOjE3MTAwMjk5MTcsImV4cCI6MTcxMDYzNDcxN30.jY0SaHK33l8awVU5KH8rD2R3wElE8rrAGADazcJfdRA\",\n    \"user\": {\n        \"_id\": \"65ecfc1f448af8211a7fee25\",\n        \"role\": \"HOME\",\n        \"username\": \"shahzaib ahmed\",\n        \"email\": \"shahzaibsaa1@gmail.com\",\n        \"createdAt\": \"2024-03-10T00:17:35.991Z\",\n        \"updatedAt\": \"2024-03-10T00:18:37.519Z\"\n    },\n    \"message\": \"Email successfully verified.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/users/logout",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout All",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/users/logout-all",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"logout-all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email Update Otp",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"shahzaibsaa1@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/users/email-update-otp",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"email-update-otp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"shahzaibsaa1@gmail.com\",\r\n     \"code\": \"905562\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/users/email-update",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"email-update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"Shahzaib Ahmed Changed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/users/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPassword\": \"Test@12345\",\r\n    \"newPassword\": \"Test@123\",\r\n    \"confirmPassword\": \"Test@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/users/update-password",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"users",
+								"update-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Shift",
+			"item": [
+				{
+					"name": "Home",
+					"item": [
+						{
+							"name": "Create Shift",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"where\": \"Karachi\",\r\n    \"who\": \"Nurse $45/h\",\r\n    \"date\": \"09 May 2024\",\r\n    \"time\": \"6:00 AM - 9:00 PM\",\r\n    \"skills\": \"Nurse\",\r\n    \"shift\": \"Day and Night\",\r\n    \"contactNo\": \"03340031540\",\r\n    \"unitName\": \"Gulistan-e-johar\",\r\n    \"postCode\": \"75290\",\r\n    \"preference\": \"As soon as possible\",\r\n    \"shiftListing\": \"Default\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/shift",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"shift"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Applications by Shift Id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/shift/applications/?shiftId=65fb4567112406d166d2893e",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"shift",
+										"applications",
+										""
+									],
+									"query": [
+										{
+											"key": "shiftId",
+											"value": "65fb4567112406d166d2893e"
+										},
+										{
+											"key": "status",
+											"value": "REJECTED",
+											"disabled": true
+										},
+										{
+											"key": "shiftId",
+											"value": "65f5cda007a05ce6ae465336",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Application Status",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"APPROVED\",\r\n    \"shiftId\": \"65fb4567112406d166d2893e\",\r\n    \"applicantId\": \"65f0d97a0e8e1855a48d43c8\"\r\n\r\n    //DEPLOYED\r\n    // \"status\": \"APPROVED\",\r\n    // \"shiftId\": \"65fb56cb553fcf81873cff8e\",\r\n    // \"applicantId\": \"65f31cc177b686440320738d\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/shift/application/status/",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"shift",
+										"application",
+										"status",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Giver",
+					"item": [
+						{
+							"name": "Apply Shift",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"shiftId\": \"66049ac01bd47bce5680ef03\",\r\n    \"shiftCreatedBy\": \"65f44e7a3fcdbda3a74046ac\"\r\n\r\n    //DEPLOYED\r\n    //   \"shiftId\": \"65fb56cb553fcf81873cff8e\",\r\n    // \"shiftCreatedBy\": \"65db4b6cf848cefe67fe4ccc\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/shift/apply",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"shift",
+										"apply"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Shift Complete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    //  \"shiftId\": \"65f5cda007a05ce6ae465336\",\r\n    // \"shiftCreatedBy\": \"65ecf4bebaada79cac1eeef1\"\r\n\r\n    //DEPLOYED\r\n      \"shiftId\": \"66033f831b37f0d7198ff88b\",\r\n    \"shiftCreatedBy\": \"65f44cc31504e9cc3d913fb5\"\r\n\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/shift/complete",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"shift",
+										"complete"
+									],
+									"query": [
+										{
+											"key": "shiftId",
+											"value": "65fb4567112406d166d2893e",
+											"disabled": true
+										},
+										{
+											"key": "shiftId",
+											"value": "65fb54aec8072eacec746002",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "All Shifts",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/shift?shiftCreatedBy=65f44cc31504e9cc3d913fb5",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"shift"
+							],
+							"query": [
+								{
+									"key": "shiftCreatedBy",
+									"value": "65f44cc31504e9cc3d913fb5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Timesheet",
+			"item": [
+				{
+					"name": "Home",
+					"item": [
+						{
+							"name": "Submitted",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/v1/timesheet/submitted",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"timesheet",
+										"submitted"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "pending",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "approved",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Status",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"shiftId\": \"65fb4567112406d166d2893e\",\r\n    \"applicantId\": \"65f0d97a0e8e1855a48d43c8\",\r\n    \"status\": \"rejected\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/timesheet/status",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"timesheet",
+										"status"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Giver",
+					"item": [
+						{
+							"name": "Submit",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"shiftId\": \"6601a1320889c3488e96aaf6\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/v1/timesheet/submit",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"timesheet",
+										"submit"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Unsubmitted",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/v1/timesheet/unsubmitted",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"v1",
+										"timesheet",
+										"unsubmitted"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Worker",
+			"item": [
+				{
+					"name": "Worker",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/v1/worker/today",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"worker",
+								"today"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
 }
